@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="damian">
+
+
+
+        <createTable tableName="roles">
+            <column name="role_id" type="BIGINT">
+                <constraints  primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+
+
+
+        <createTable tableName="departments">
+            <column name="department_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="department_id"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="city" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="head_of_departament_id" type="BIGINT">
+                <constraints  primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="number_of_employyes" type="integer"
+                   />
+
+
+
+            <column name="min_salary" type="float"
+                    />
+
+            <column name="max_salary" type="float"
+                  />
+
+            <column name="average_salary" type="float"
+                   />
+
+            <column name="median_salary" type="float"
+                   />
+
+
+        </createTable>
+
+        <createTable tableName="users">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(100)">
+            <constraints nullable="true"/>
+        </column>
+            <column name="last_name" type="varchar(100)">
+            <constraints nullable="true"/>
+        </column>
+
+            <column name="password" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="phone_number" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="email" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+
+            <column name="active" type="boolean"
+                    defaultValueBoolean="false"/>
+            <column name="departament_id" type="BIGINT"/>
+
+            <column name="salary" type="float"
+            />
+            <column name="created_date" type="date">
+
+            </column>
+
+            <column name="login_time" type="date">
+
+            </column>
+
+
+        </createTable>
+
+
+        <createTable tableName="user_role">
+            <column name="role_id" type="BIGINT">
+                <constraints  primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints  primaryKey="true" nullable="false"/>
+            </column>
+
+        </createTable>
+
+
+
+<!--        <addForeignKeyConstraint baseColumnNames="role_id"-->
+<!--                                 baseTableName="users"-->
+<!--                                 constraintName="fk_user_role_id"-->
+<!--                                 referencedColumnNames="id"-->
+<!--                                 referencedTableName="roles"/>-->
+
+
+
+    </changeSet>
+</databaseChangeLog>
