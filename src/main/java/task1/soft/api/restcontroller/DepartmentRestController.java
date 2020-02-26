@@ -31,20 +31,8 @@ public class DepartmentRestController {
     @ResponseBody
     @GetMapping("/departments")
     public List<Departament> hello(){
-        Departament departament= new Departament();
-        departament.setName("it");
-        departament.setCity("rzeszow");
-        departament.setAverageSalary(100f);
-        departament.setHeadOfDepartament(userRepository.findOne(1L));
-        departament.setNumberOfEmployyes(10);
-        departament.setMaxSalary(200f);
-        departament.setMinSalary(50f);
-        departament.setNumberOfEmployyes(1);
-        departmentRepository.save(departament);
-        Gson gson = new Gson();
-        String json = gson.toJson(departament);
        return departmentRepository.findAll();
-//
+
     }
 
 
