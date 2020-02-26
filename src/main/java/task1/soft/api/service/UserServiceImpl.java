@@ -1,5 +1,6 @@
 package task1.soft.api.service;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,15 +45,17 @@ public class UserServiceImpl implements UserService {
 
         User ceo = new User();
 
-        ceo.setUserId(1L);
         ceo.setFirstName("admin");
         ceo.setLastName("admin");
         ceo.setEmail("ceo@pgs.com");
         ceo.setSalary(100000f);
+        ceo.setActive(true);
         ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
         ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         System.out.print(ceo.getPassword());
+
+
         userRepository.save(ceo);
     }
 

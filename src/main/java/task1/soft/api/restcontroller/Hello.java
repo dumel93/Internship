@@ -27,11 +27,9 @@ public class Hello {
     @EventListener(ApplicationReadyEvent.class)
     public void setUpCEO() {
 
-       userService.saveCEO();
-
+       if(userRepository.findAll().size()==0){
+           userService.saveCEO();
+        }
 
     }
-
-
-
 }

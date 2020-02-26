@@ -31,10 +31,10 @@ public class Departament {
     private Integer numberOfEmployyes;
 
     @Column
-    private Float minSalary;
+    private Float minSalary=0f;
 
     @Column
-    private Float maxSalary;
+    private Float maxSalary=0f;
 
     @Column
     private Float averageSalary;
