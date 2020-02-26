@@ -41,17 +41,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveCEO() {
+
         User ceo = new User();
+
+        ceo.setUserId(1L);
         ceo.setFirstName("admin");
         ceo.setLastName("admin");
         ceo.setEmail("ceo@pgs.com");
         ceo.setSalary(100000f);
-        ceo.setPassword("admin123");
-        ceo.setPassword(passwordEncoder.encode(ceo.getPassword()));
+        ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
         ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        System.out.print(ceo.getPassword());
         userRepository.save(ceo);
     }
+
+
 
     @Override
     public void findAllUsers() {

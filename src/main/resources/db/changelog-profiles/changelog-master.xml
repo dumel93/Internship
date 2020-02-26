@@ -9,8 +9,8 @@
 
 
 
-        <createTable tableName="roles">
-            <column name="role_id" type="BIGINT">
+        <createTable tableName="roles" >
+            <column name="role_id" type="BIGINT" autoIncrement="true">
                 <constraints  primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -23,7 +23,7 @@
 
 
         <createTable tableName="departments">
-            <column name="department_id" type="BIGINT">
+            <column name="department_id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" foreignKeyName="department_id"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -33,7 +33,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="head_of_departament_id" type="BIGINT">
+            <column name="head_of_departament_user_id" type="BIGINT">
                 <constraints  primaryKey="true" nullable="false"/>
             </column>
 
@@ -58,8 +58,8 @@
         </createTable>
 
         <createTable tableName="users">
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="user_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"  />
             </column>
             <column name="first_name" type="varchar(100)">
             <constraints nullable="true"/>
@@ -68,7 +68,7 @@
             <constraints nullable="true"/>
         </column>
 
-            <column name="password" type="varchar(50)">
+            <column name="password" type="varchar(100)">
                 <constraints nullable="true"/>
             </column>
 
@@ -82,6 +82,10 @@
             <column name="active" type="boolean"
                     defaultValueBoolean="false"/>
             <column name="departament_id" type="BIGINT"/>
+
+            <column name="is_head" type="boolean"
+                    defaultValueBoolean="false"/>
+
 
             <column name="salary" type="float"
             />
@@ -99,21 +103,14 @@
 
         <createTable tableName="user_role">
             <column name="role_id" type="BIGINT">
-                <constraints  primaryKey="true" nullable="false"/>
+                <constraints  foreignKeyName="fk_role_id" referencedTableName="roles" referencedColumnNames="role_id" nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints  primaryKey="true" nullable="false"/>
+                <constraints  foreignKeyName="fk_user_id" referencedTableName="users" referencedColumnNames="user_id" nullable="false"/>
             </column>
 
         </createTable>
 
-
-
-<!--        <addForeignKeyConstraint baseColumnNames="role_id"-->
-<!--                                 baseTableName="users"-->
-<!--                                 constraintName="fk_user_role_id"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="roles"/>-->
 
 
 

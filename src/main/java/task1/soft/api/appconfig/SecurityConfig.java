@@ -17,7 +17,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-
     private DataSource dataSource;
 
 
@@ -26,7 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth.
