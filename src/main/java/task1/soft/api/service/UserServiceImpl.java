@@ -101,4 +101,24 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public void update(User employee, Long id) {
+        employee.setUserId(id);
+        userRepository.save(employee);
+    }
+
+    @Override
+    public void createRoles() {
+        Role r1= new Role();
+        r1.setName("ROLE_CEO");
+        Role r2= new Role();
+        r2.setName("ROLE_HEAD");
+        Role r3= new Role();
+        r3.setName("ROLE_EMPLOYEE");
+        roleRepository.save(r1);
+        roleRepository.save(r2);
+        roleRepository.save(r3);
+    }
+
+
 }

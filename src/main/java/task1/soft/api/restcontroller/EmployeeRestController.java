@@ -6,10 +6,14 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import task1.soft.api.entity.Role;
 import task1.soft.api.entity.User;
+import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.UserService;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -19,6 +23,9 @@ public class EmployeeRestController {
     private  final UserRepository userRepository;
 
     private  final UserService userService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     public EmployeeRestController(UserRepository userRepository, UserService userService) {
@@ -58,6 +65,20 @@ public class EmployeeRestController {
         userService.save(employee);
         return employee;
     }
+
+    @Secured("ROLE_CEO")
+    @PutMapping("/{id}/head")
+    public void setHead(@PathVariable Long id){
+        User employee= userRepository.findOne(id);
+        employee.setHead(true);
+        Role userRole = roleRepository.findByName("ROLE_HEAD");
+        employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        employee.setUserId(id);
+        userService.save(employee);
+
+    }
+
+
 
 
 

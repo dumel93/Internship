@@ -18,10 +18,11 @@ public class DataLoader {
 
 
     @EventListener(ApplicationReadyEvent.class)
-    public void setUpCEO() {
+    public void setUpDB() {
 
 
             if(userService.findAll().size()==0){
+                userService.createRoles();
                 userService.saveCEO(); //custom ceo
                 departmentService.savedep(); // custom department
                 userService.saveEmployee(); // custom employee

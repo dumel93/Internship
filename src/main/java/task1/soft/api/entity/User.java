@@ -159,6 +159,14 @@ public class User {
     public void setLoginTime(Date loginTime) {
         this.loginTime = loginTime;
     }
+
+    public boolean isHead() {
+        return isHead;
+    }
+
+    public void setHead(boolean head) {
+        isHead = head;
+    }
 }
 
 

@@ -17,4 +17,8 @@ public interface UserService {
     void save(User employee);
 
     void saveEmployee();
+
+    void update(User employee, Long id);
+
+    void createRoles();
 }
