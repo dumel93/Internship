@@ -2,6 +2,7 @@ package task1.soft.api.restcontroller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import task1.soft.api.entity.Departament;
 import task1.soft.api.entity.Role;
 import task1.soft.api.entity.User;
+import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.UserService;
 
+import javax.validation.constraints.Min;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +34,9 @@ public class EmployeeRestController {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     @Autowired
     public EmployeeRestController(UserRepository userRepository, UserService userService) {
@@ -87,6 +93,33 @@ public class EmployeeRestController {
 
     }
 
+
+
+
+    @Secured("ROLE_HEAD")
+    @PostMapping("/create_employee")
+    @ResponseStatus(HttpStatus.CREATED)
+    public User add2(@AuthenticationPrincipal  UserDetails auth,@RequestBody User employee) {
+
+        User newEmployee = new User();
+        newEmployee.setFirstName(employee.getFirstName());
+        newEmployee.setLastName(employee.getLastName());
+        newEmployee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        newEmployee.setActive(true);
+        Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
+        newEmployee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        Departament departament= userRepository.findByEmail(auth.getUsername()).getDepartament();
+        newEmployee.setDepartament(departmentRepository.findOne(departament.getId()));
+        userRepository.save(employee);
+
+    return newEmployee;
+
+    }
+
+
+
+
+
     @Secured("ROLE_HEAD")
     @PutMapping("/change_pass/{id}")
     public void  updatePassword(@AuthenticationPrincipal  UserDetails auth,@RequestBody User employee, @PathVariable Long id) {
@@ -99,6 +132,55 @@ public class EmployeeRestController {
 
 
     }
+
+
+
+    @Secured("ROLE_HEAD")
+    @PutMapping("/setSalary/{id}")
+    public void  setSalary(@AuthenticationPrincipal  UserDetails auth,@RequestBody User employee,  @PathVariable Long id) {
+
+
+
+        User emp=userRepository.findOne(id);
+        if(!userService.findAllEmployyesOfDepForHead(this.findIdOfHead(auth)).contains(emp)){
+            System.out.println("this head do not have employee in this department ");
+        }
+        else{
+            Float salary=employee.getSalary();
+
+            if(salary >= emp.getDepartament().getMinSalary() && salary <= emp.getDepartament().getMaxSalary()){
+                emp.setSalary(salary);
+                userService.update(emp,  id);
+            }
+            else{
+                System.out.printf("wrong amount");
+            }
+        }
+
+
+    }
+
+
+    @Secured("ROLE_HEAD")
+    @PutMapping("/disable/{id}")
+    public void disable(@AuthenticationPrincipal  UserDetails auth, @PathVariable Long id) {
+
+        User emp=userRepository.findOne(id);
+        if(userService.findAllEmployyesOfDepForHead(this.findIdOfHead(auth)).contains(emp)){
+            emp.setActive(false);
+            userService.update(emp,  id);
+
+        }
+        else{
+            System.out.println("this head do not have employee in this department ");
+        }
+
+
+
+    }
+
+
+
 
 
 
