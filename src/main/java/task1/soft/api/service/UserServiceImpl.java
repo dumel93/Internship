@@ -2,11 +2,14 @@ package task1.soft.api.service;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import task1.soft.api.entity.Phone;
 import task1.soft.api.entity.Role;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
+import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 
@@ -14,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -36,6 +40,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PhoneRepository phoneRepository;
 
 
     public UserServiceImpl(UserRepository repository) {
@@ -89,15 +95,50 @@ public class UserServiceImpl implements UserService {
     public void saveEmployee() {
         User employee = new User();
 
-        employee.setFirstName("w");
-        employee.setLastName("w");
-        employee.setEmail("cwwww@pgs.com");
+//        Phone phone1= new Phone();
+//        phone1.setId(1L);
+//        phone1.setNumber("5332073955");
+//        phone1.setType("private");
+//
+//        Phone phone2= new Phone();
+//        phone1.setId(2L);
+//        phone2.setNumber("533443955");
+//        phone2.setType("company");
+//
+//
+//        phoneRepository.save(phone1);
+//        phoneRepository.save(phone2);
+//        Set<Phone> phones = new HashSet<>();
+//        phones.add(phone1);
+//        phones.add(phone2);
+
+//        employee.setPhones(phones);
+        employee.setFirstName("Witold");
+        employee.setLastName("Marzec");
+        employee.setEmail("cabc@pgs.com");
         employee.setActive(true);
-        employee.setPassword(passwordEncoder.encode("admin123"));
+        employee.setPassword(passwordEncoder.encode("haslo123"));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
-        employee.setDepartaments( departmentRepository.findOne(1L));
+        employee.setDepartament(departmentRepository.findOne(1L));
         userRepository.save(employee);
+
+
+
+        User empl2= new User();
+        empl2.setFirstName("Karol");
+        empl2.setLastName("Maj");
+        empl2.setEmail("cdeee@pgs.com");
+        empl2.setActive(true);
+        empl2.setPassword(passwordEncoder.encode("haslo123"));
+        Role role = roleRepository.findByName("ROLE_EMPLOYEE");
+        empl2.setRoles(new HashSet<Role>(Arrays.asList(role)));
+        empl2.setDepartament(departmentRepository.findOne(1L));
+        userRepository.save(empl2);
+
+
+
+
     }
 
 

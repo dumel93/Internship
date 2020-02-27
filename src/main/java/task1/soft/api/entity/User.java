@@ -7,8 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -34,8 +33,11 @@ public class User {
     @Column
     private String lastName;
 
-    @Column
-    private String phoneNumber;
+
+    @OneToMany(cascade	=CascadeType.ALL)
+    @JoinColumn(name="id_phone")
+    private Set<Phone> phones	=new HashSet<>();
+
 
     @Email
     @Column(nullable = false, unique = true)
@@ -51,10 +53,20 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="departament_id")
-    private Departament departaments;
+    @ManyToOne
+    private Departament departament;
 
+    public Set<Phone> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(Set<Phone> phones) {
+        this.phones = phones;
+    }
+
+    public void setDepartament(Departament departament) {
+        this.departament = departament;
+    }
 
     private boolean isHead = false;
 
@@ -88,13 +100,6 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
     public String getEmail() {
         return email;
@@ -128,13 +133,11 @@ public class User {
         this.roles = roles;
     }
 
-    public Departament getDepartaments() {
-        return departaments;
+    public Departament getDepartament() {
+        return departament;
     }
 
-    public void setDepartaments(Departament departaments) {
-        this.departaments = departaments;
-    }
+
 
     public Float getSalary() {
         return salary;

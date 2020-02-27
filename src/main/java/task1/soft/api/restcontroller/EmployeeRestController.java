@@ -47,7 +47,7 @@ public class EmployeeRestController {
 
         String email= auth.getUsername();
         User head= userRepository.findByEmail(email);
-        Long idDep= head.getDepartaments().getId();
+        Long idDep= head.getDepartament().getId();
 
         return userService.findAllEmployyesOfDep(idDep);
 //

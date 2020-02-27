@@ -24,7 +24,7 @@ public class DepServiceIImpl implements DepartmentService {
         departament.setName("it");
         departament.setCity("rzeszow");
         departament.setAverageSalary(100f);
-        departament.setHeadOfDepartament(userRepository.findByEmail("ceo@pgs.com"));
+        departament.setHeadOfDepartmentUserId(userRepository.findByEmail("ceo@pgs.com").getUserId());
         departament.setNumberOfEmployyes(10);
         departament.setMaxSalary(200f);
         departament.setMinSalary(50f);

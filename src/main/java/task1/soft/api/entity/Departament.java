@@ -4,6 +4,8 @@ package task1.soft.api.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -12,7 +14,6 @@ public class Departament {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "department_id")
     private Long id;
 
     @Column
@@ -22,10 +23,23 @@ public class Departament {
     private String city;
 
 
+    @Column
+    private Long headOfDepartmentUserId;
 
-    @OneToOne(targetEntity=User.class,cascade=CascadeType.ALL)
-    private User headOfDepartament;
+    @OneToMany(mappedBy	="departament",cascade=CascadeType.ALL)
+    private List<User> employyers=new ArrayList<>();
 
+
+
+
+
+    public List<User> getEmployyers() {
+        return employyers;
+    }
+
+    public void setEmployyers(List<User> employyers) {
+        this.employyers = employyers;
+    }
 
     @Column
     private Integer numberOfEmployyes;
@@ -66,13 +80,7 @@ public class Departament {
         this.city = city;
     }
 
-    public User getHeadOfDepartament() {
-        return headOfDepartament;
-    }
 
-    public void setHeadOfDepartament(User headOfDepartament) {
-        this.headOfDepartament = headOfDepartament;
-    }
 
     public Integer getNumberOfEmployyes() {
         return numberOfEmployyes;
@@ -113,4 +121,15 @@ public class Departament {
     public void setMedianSalary(Float medianSalary) {
         this.medianSalary = medianSalary;
     }
-}
+
+    public void setHeadOfDepartament(Long userId) {
+    }
+
+
+    public Long getHeadOfDepartmentUserId() {
+        return headOfDepartmentUserId;
+    }
+
+    public void setHeadOfDepartmentUserId(Long headOfDepartmentUserId) {
+        this.headOfDepartmentUserId = headOfDepartmentUserId;
+}}
