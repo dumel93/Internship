@@ -82,7 +82,7 @@
 
             <column name="active" type="boolean"
                     defaultValueBoolean="false"/>
-            <column name="departament_id" type="BIGINT"/>
+            <column name="department_id" type="BIGINT"/>
 
             <column name="is_head" type="boolean"
                     defaultValueBoolean="false"/>

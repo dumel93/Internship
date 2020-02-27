@@ -1,44 +1,26 @@
 package task1.soft.api.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
+@Data
 @Entity
-public	class Phone	{
+@Table(name = "phones")
+public class Phone {
 
     @Id
-    @Column(name = "id_phone")
+    @Column(name = "phone_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private	Long id;
+    private Long id;
 
     @Column
-    private String type;
+    private PhoneType type;
 
     @Column
     private String number;
 
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
 }
 

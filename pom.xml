@@ -19,7 +19,6 @@
     </properties>
 
 
-
     <parent>
 
         <groupId>org.springframework.boot</groupId>
@@ -31,7 +30,6 @@
     </parent>
 
 
-
     <dependencies>
 
         <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
@@ -40,11 +38,14 @@
             <artifactId>liquibase-core</artifactId>
             <version>3.8.7</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
+            <scope>provided</scope>
         </dependency>
+
 
 
         <dependency>
@@ -83,7 +84,6 @@
         </dependency>
 
 
-
         <dependency>
 
             <groupId>net.sourceforge.nekohtml</groupId>
@@ -91,8 +91,6 @@
             <artifactId>nekohtml</artifactId>
 
         </dependency>
-
-
 
 
         <dependency>
@@ -104,7 +102,6 @@
             <optional>true</optional>
 
         </dependency>
-
 
 
         <dependency>
@@ -126,10 +123,7 @@
         </dependency>
 
 
-
-
         <!-- https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-java8time -->
-
 
 
         <dependency>
@@ -163,7 +157,6 @@
             <scope>compile</scope>
 
         </dependency>
-
 
 
         <dependency>
@@ -211,11 +204,7 @@
         </dependency>
 
 
-
-
     </dependencies>
-
-
 
 
     <packaging>war</packaging>
@@ -228,9 +217,26 @@
             <plugin>
 
                 <groupId>org.springframework.boot</groupId>
-
                 <artifactId>spring-boot-maven-plugin</artifactId>
 
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.12</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
 
         </plugins>

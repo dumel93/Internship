@@ -6,12 +6,12 @@ import java.util.List;
 
 public interface UserService {
 
-    public void saveCEO();
+    public void setupCEO();
 
     void findAllUsers();
 
-    List<User> findAllEmployyesOfDepForHead(Long idDep);
-    List<User> findAllEmployyesOfDepForCEO(Long idDep);
+    List<User> findAllEmployyesOfDepF(Long idDep);
+
 
     List<User> findAll();
 

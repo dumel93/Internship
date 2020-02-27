@@ -10,28 +10,24 @@ import task1.soft.api.service.UserService;
 @Component
 public class DataLoader {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    private final DepartmentService departmentService;
 
     @Autowired
-    private DepartmentService departmentService;
-
-
-
+    public DataLoader(UserService userService, DepartmentService departmentService) {
+        this.userService = userService;
+        this.departmentService = departmentService;
+    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void setUpDB() {
 
-
-            if(userService.findAll().size()==0){
-                userService.createRoles(); // create 3 roles and also..
-                userService.saveCEO(); //custom ceo
-                departmentService.savedep(); // custom department
-                userService.saveEmployee(); // custom employees
-            }
-
-
+        if (userService.findAll().size() == 0) {
+            userService.createRoles(); // create 3 roles and ceo..
+            userService.setupCEO();
+//                departmentService.savedep(); // custom department
+//                userService.saveEmployee(); // custom employees
+        }
     }
-
-
 }

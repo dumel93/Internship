@@ -17,45 +17,36 @@ import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    private final RoleRepository roleRepository;
+
+    private final DepartmentRepository departmentRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    private final UserRepository userRepository;
+
+    private final PhoneRepository phoneRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private DepartmentRepository departmentRepository;
-
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PhoneRepository phoneRepository;
-
-
-    public UserServiceImpl(UserRepository repository) {
-
-        this.userRepository=repository;
-
+    public UserServiceImpl(RoleRepository roleRepository, DepartmentRepository departmentRepository, BCryptPasswordEncoder passwordEncoder, UserRepository userRepository, PhoneRepository phoneRepository) {
+        this.roleRepository = roleRepository;
+        this.departmentRepository = departmentRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.phoneRepository = phoneRepository;
     }
 
 
     @Override
-    public void saveCEO() {
-
+    public void setupCEO() {
         User ceo = new User();
-
         ceo.setFirstName("admin");
         ceo.setLastName("admin");
         ceo.setEmail("ceo@pgs.com");
@@ -64,26 +55,13 @@ public class UserServiceImpl implements UserService {
         ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
         ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
-
-
         userRepository.save(ceo);
+
     }
-
-
 
     @Override
     public void findAllUsers() {
         userRepository.findAll();
-    }
-
-    @Override
-    public List<User> findAllEmployyesOfDepForHead(Long idDep) {
-        return userRepository.findAllEmployyesOfDepForHead(idDep);
-    }
-
-    @Override
-    public List<User> findAllEmployyesOfDepForCEO(Long idDep) {
-        return userRepository.findAllEmployyesOfDepForCEO(idDep);
     }
 
 
@@ -99,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveEmployee() {
+    public void createEmployee() {
         User employee = new User();
 
 //        Phone phone1= new Phone();
@@ -127,12 +105,11 @@ public class UserServiceImpl implements UserService {
         employee.setPassword(passwordEncoder.encode("haslo123"));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
-        employee.setDepartament(departmentRepository.findOne(1L));
+        employee.setdepartment(departmentRepository.findOne(1L));
         userRepository.save(employee);
 
 
-
-        User empl2= new User();
+        User empl2 = new User();
         empl2.setFirstName("Karol");
         empl2.setLastName("Maj");
         empl2.setEmail("abc@pgs.com");
@@ -140,33 +117,29 @@ public class UserServiceImpl implements UserService {
         empl2.setPassword(passwordEncoder.encode("haslo123"));
         Role role = roleRepository.findByName("ROLE_EMPLOYEE");
         empl2.setRoles(new HashSet<Role>(Arrays.asList(role)));
-        empl2.setDepartament(departmentRepository.findOne(1L));
+        empl2.setdepartment(departmentRepository.findOne(1L));
         userRepository.save(empl2);
 
 
-
-
     }
 
-
     @Override
-    public void update(User employee, Long id) {
-        employee.setUserId(id);
+    public void updateUser(User employee, Long id) {
+        employee.setId(id);
         userRepository.save(employee);
     }
 
+
     @Override
     public void createRoles() {
-        Role r1= new Role();
+        Role r1 = new Role();
         r1.setName("ROLE_CEO");
-        Role r2= new Role();
+        Role r2 = new Role();
         r2.setName("ROLE_HEAD");
-        Role r3= new Role();
+        Role r3 = new Role();
         r3.setName("ROLE_EMPLOYEE");
         roleRepository.save(r1);
         roleRepository.save(r2);
         roleRepository.save(r3);
     }
-
-
 }
