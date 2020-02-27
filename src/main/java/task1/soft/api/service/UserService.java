@@ -10,7 +10,8 @@ public interface UserService {
 
     void findAllUsers();
 
-    List<User> findAllEmployyesOfDep(Long idDep);
+    List<User> findAllEmployyesOfDepForHead(Long idDep);
+    List<User> findAllEmployyesOfDepForCEO(Long idDep);
 
     List<User> findAll();
 

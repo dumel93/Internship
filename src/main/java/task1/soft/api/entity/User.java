@@ -2,6 +2,7 @@ package task1.soft.api.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
@@ -43,6 +44,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+
     @Column
     private String password;
 
@@ -53,6 +55,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @JsonIgnore
     @ManyToOne
     private Departament departament;
 

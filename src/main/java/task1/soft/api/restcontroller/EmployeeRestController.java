@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import task1.soft.api.entity.Departament;
 import task1.soft.api.entity.Role;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.RoleRepository;
@@ -25,6 +27,9 @@ public class EmployeeRestController {
     private  final UserService userService;
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
@@ -41,22 +46,26 @@ public class EmployeeRestController {
 //
     }
 
+    public  Long findIdOfHead(@AuthenticationPrincipal  UserDetails auth){
+
+        String email= auth.getUsername();
+        User head= userRepository.findByEmail(email);
+        return head.getDepartament().getId();
+
+    }
+
     @Secured("ROLE_HEAD")
     @GetMapping("/departments")
     public List<User> hello2(@AuthenticationPrincipal  UserDetails auth){
 
-        String email= auth.getUsername();
-        User head= userRepository.findByEmail(email);
-        Long idDep= head.getDepartament().getId();
-
-        return userService.findAllEmployyesOfDep(idDep);
+        return userService.findAllEmployyesOfDepForHead(this.findIdOfHead(auth));
 //
     }
 
     @Secured("ROLE_CEO")
     @GetMapping("/departments/{id}")
     public List<User> get3( @PathVariable Long id){
-        return userService.findAllEmployyesOfDep(id);
+        return userService.findAllEmployyesOfDepForCEO(id);
     }
 
     @Secured("ROLE_CEO")
@@ -75,6 +84,19 @@ public class EmployeeRestController {
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         employee.setUserId(id);
         userService.save(employee);
+
+    }
+
+    @Secured("ROLE_HEAD")
+    @PutMapping("/change_pass/{id}")
+    public void  updatePassword(@AuthenticationPrincipal  UserDetails auth,@RequestBody User employee, @PathVariable Long id) {
+
+        User emp=userRepository.findOne(id);
+
+        String newPass=employee.getPassword();
+        emp.setPassword(passwordEncoder.encode(newPass));
+        userService.update(emp,  id);
+
 
     }
 

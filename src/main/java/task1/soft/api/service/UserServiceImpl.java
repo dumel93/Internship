@@ -77,9 +77,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllEmployyesOfDep(Long idDep) {
-        return userRepository.findAllEmployyesOfDep(idDep);
+    public List<User> findAllEmployyesOfDepForHead(Long idDep) {
+        return userRepository.findAllEmployyesOfDepForHead(idDep);
     }
+
+    @Override
+    public List<User> findAllEmployyesOfDepForCEO(Long idDep) {
+        return userRepository.findAllEmployyesOfDepForCEO(idDep);
+    }
+
+
 
     @Override
     public List<User> findAll() {
@@ -115,7 +122,7 @@ public class UserServiceImpl implements UserService {
 //        employee.setPhones(phones);
         employee.setFirstName("Witold");
         employee.setLastName("Marzec");
-        employee.setEmail("cabc@pgs.com");
+        employee.setEmail("cde@pgs.com");
         employee.setActive(true);
         employee.setPassword(passwordEncoder.encode("haslo123"));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
@@ -128,7 +135,7 @@ public class UserServiceImpl implements UserService {
         User empl2= new User();
         empl2.setFirstName("Karol");
         empl2.setLastName("Maj");
-        empl2.setEmail("cdeee@pgs.com");
+        empl2.setEmail("abc@pgs.com");
         empl2.setActive(true);
         empl2.setPassword(passwordEncoder.encode("haslo123"));
         Role role = roleRepository.findByName("ROLE_EMPLOYEE");
