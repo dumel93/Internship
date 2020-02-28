@@ -1,5 +1,6 @@
 package task1.soft.api.appconfig;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,12 +17,17 @@ import javax.sql.DataSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    private final DataSource dataSource;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private DataSource dataSource;
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @Autowired
-    public SecurityConfig(DataSource dataSource, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+    @Autowired
+    public void setbCryptPasswordEncoder(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 

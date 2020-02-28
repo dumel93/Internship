@@ -1,79 +1,91 @@
 package task1.soft.api.restcontroller;
 
 
+import ch.qos.logback.core.db.dialect.DBUtil;
+import org.apache.el.parser.ParseException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import task1.soft.api.dto.DepartmentDTO;
+import task1.soft.api.dto.DepartmentSalariesDTO;
+import task1.soft.api.entity.Department;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
-import javax.transaction.Transactional;
+import task1.soft.api.service.DepartmentService;
+import task1.soft.api.util.DtoUtils;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.List;
 
-
-
+@Secured("ROLE_CEO")
 @RestController
+@RequestMapping(produces = "application/json",value = "/departments")
 public class DepartmentRestController {
 
     private final DepartmentRepository departmentRepository;
-
+    private final DepartmentService departmentService;
     private final UserRepository userRepository;
+    private  final ModelMapper modelMapper;
 
     @Autowired
-    public DepartmentRestController(DepartmentRepository departmentRepository, UserRepository userRepository) {
+    public DepartmentRestController(DepartmentRepository departmentRepository, DepartmentService departmentService, UserRepository userRepository, ModelMapper modelMapper) {
         this.departmentRepository = departmentRepository;
+        this.departmentService = departmentService;
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
-    @Transactional
-    @ResponseBody
-    @GetMapping("/departments")
-    public List<department> hello() {
+
+
+    @GetMapping(value = "/")
+    public List<Department> getDepartments() {
         return departmentRepository.findAll();
     }
 
-    @PostMapping("/departments")
+
+    @GetMapping(value = "/{id}")
+    public Department getDepartment(@PathVariable("id") Long id) {
+        return departmentRepository.findOne(id);
+    }
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public department add(@RequestBody department department) {
+    public DepartmentDTO createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) throws ParseException {
 
-        departmentRepository.save(department);
+        return (DepartmentDTO) departmentService.createDepartment(departmentDTO.getName(),departmentDTO.getCity());
 
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    Department UpdateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id) throws ParseException {
+        Department department=modelMapper.map(departmentDTO, Department.class);
+
+        departmentService.updateDepartment(department);
+        return department;
+    }
+
+    @PutMapping("/salaries/{id}")
+    Department setMinSalaryOrMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id) throws ParseException {
+
+        Department department=modelMapper.map(departmentSalariesDTO, Department.class);
+        department.setId(id);;
+        department.setMinSalary(departmentSalariesDTO.getMinSalary());
+        department.setMaxSalary(departmentSalariesDTO.getMaxSalary());
+        departmentService.save(department);
         return department;
 
-
     }
 
-    @PutMapping("/departments/{id}")
-    department saveOrUpdate(@Valid @RequestBody department department, @PathVariable Long id) {
-
-        department.setId(id);
-        departmentRepository.save(department);
-        return department;
-
-    }
-
-
-    @PutMapping("/departments/{id}/salaries")
-    department setMinSalaryOrMaxSalary(@RequestBody department department, @PathVariable Long id) {
-
-        department departmenttoSave = departmentRepository.findOne(id);
-        float max_salary = department.getMaxSalary();
-        float min_salary = department.getMinSalary();
-        departmenttoSave.setMaxSalary(max_salary);
-        departmenttoSave.setMinSalary(min_salary);
-        departmenttoSave.setId(id);
-        departmentRepository.save(departmenttoSave);
-        return departmenttoSave;
-
-    }
-
-    @DeleteMapping("/departments/{id}")
-    void delOne(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id) {
-        department department = departmentRepository.findOne(id);
-        if (department.getNumberOfEmployyes() == 0) {
+    @DeleteMapping("/{id}")
+    void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id) {
+        Department department = departmentRepository.findOne(id);
+        if (department.getNumberOfEmployees() == 0) {
             departmentRepository.delete(department);
         }
-
 
     }
 

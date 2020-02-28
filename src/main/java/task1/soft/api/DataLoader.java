@@ -26,7 +26,7 @@ public class DataLoader {
         if (userService.findAll().size() == 0) {
             userService.createRoles(); // create 3 roles and ceo..
             userService.setupCEO();
-//                departmentService.savedep(); // custom department
+            departmentService.createDepartment("it","rzeszow");
 //                userService.saveEmployee(); // custom employees
         }
     }

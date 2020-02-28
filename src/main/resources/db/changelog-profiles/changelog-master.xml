@@ -23,7 +23,7 @@
 
 
         <createTable tableName="departments">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="department_id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" foreignKeyName="department_id"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -33,26 +33,20 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="head_of_department_user_id" type="BIGINT">
-            </column>
-
             <column name="user_id" type="BIGINT">
             </column>
-            <column name="number_of_employyes" type="integer"
-                   />
+            <column name="number_of_employees" type="integer"/>
 
-
-
-            <column name="min_salary" type="float"
+            <column name="min_salary" type="double"
                     />
 
-            <column name="max_salary" type="float"
+            <column name="max_salary" type="double"
                   />
 
-            <column name="average_salary" type="float"
+            <column name="average_salary" type="double"
                    />
 
-            <column name="median_salary" type="float"
+            <column name="median_salary" type="double"
                    />
 
 
@@ -73,7 +67,7 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="id_phone" type="BIGINT">
+            <column name="phone_id" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
             <column name="email" type="varchar(50)">
@@ -82,13 +76,13 @@
 
             <column name="active" type="boolean"
                     defaultValueBoolean="false"/>
-            <column name="department_id" type="BIGINT"/>
+            <column name="department_department_id" type="BIGINT"/>
 
             <column name="is_head" type="boolean"
                     defaultValueBoolean="false"/>
 
 
-            <column name="salary" type="float"
+            <column name="salary" type="double"
             />
             <column name="created_date" type="date">
 
@@ -112,19 +106,19 @@
 
         </createTable>
 
-        <createTable tableName="phone">
+        <createTable tableName="phones">
 
-        <column name="id_phone" type="BIGINT" autoIncrement="true">
+        <column name="phone_id" type="BIGINT" autoIncrement="true">
             <constraints primaryKey="true" nullable="false"/>
         </column>
-            <column name="type" type="varchar(50)">
-
+            <column name="type" type="integer">
                 <constraints nullable="false"/>
             </column>
             <column name="number" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <sql>ALTER TABLE phones ADD CONSTRAINT type CHECK (type = 'BUSINESS' OR type = 'PRIVATE')</sql>
 
 
 
@@ -141,7 +135,7 @@
                                  referencedTableName="users"
                                  validate="true"/>
 
-        <addForeignKeyConstraint baseColumnNames="id_phone"
+        <addForeignKeyConstraint baseColumnNames="phone_id"
                                  baseTableName="users"
 
                                  constraintName="fk3"
@@ -149,8 +143,8 @@
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
 
-                                 referencedColumnNames="id_phone"
-                                 referencedTableName="phone"
+                                 referencedColumnNames="phone_id"
+                                 referencedTableName="phones"
                                  validate="true"/>
 
 
