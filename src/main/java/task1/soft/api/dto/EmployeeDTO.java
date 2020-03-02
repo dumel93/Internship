@@ -1,12 +1,14 @@
 package task1.soft.api.dto;
 
 import lombok.Data;
+import task1.soft.api.entity.Department;
+import task1.soft.api.util.DTOEntity;
+
 import javax.validation.constraints.NotNull;
 
 @Data
-public class EmployeeDTO {
+public class EmployeeDTO implements DTOEntity {
 
-    private Long employeeId;
 
     @NotNull
     private String firstName;
@@ -17,6 +19,9 @@ public class EmployeeDTO {
     @NotNull
     private String email;
 
-    private DepartmentDTO department;
+    @NotNull
+    private String password;
+
+    private Long departmentId;
 
 }

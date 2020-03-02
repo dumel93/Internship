@@ -3,13 +3,10 @@ package task1.soft.api.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
-import task1.soft.api.util.DTOEntity;
-import task1.soft.api.util.DtoUtils;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -23,7 +20,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final UserRepository userRepository;
 
     private final DepartmentRepository departmentRepository;
-    private  final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
@@ -43,8 +40,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 //        return DtoUtils.convertToDto(department, new DepartmentDTO());
 
 
-
-
 //        department.setMedianSalary(DoubleStream.of().sorted().toArray()[array.length / 2]);
 
 
@@ -55,10 +50,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = new Department();
         department.setName(name);
         department.setCity(city);
-        List<User> employees= userRepository.findAllEmployeesOfDepartment(department.getId());
+        List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
         department.setEmployees(employees);
         department.setNumberOfEmployees(department.getEmployees().size());
-        department.setAverageSalary( department.getEmployees().stream()
+        department.setAverageSalary(department.getEmployees().stream()
                 .collect(Collectors.averagingDouble(User::getSalary)));
         department.setNumberOfEmployees(department.getEmployees().size());
         departmentRepository.save(department);
@@ -75,13 +70,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 
         department.setId(department.getId());
-        department.setEmployees(department.getEmployees());
+
         department.setName(department.getName());
         department.setCity(department.getCity());
-        department.setMaxSalary(department.getMaxSalary());
-        department.setMinSalary(department.getMinSalary());
-        department.setNumberOfEmployees(department.getNumberOfEmployees());
-        department.setAverageSalary(department.getAverageSalary());
+        List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
+        department.setEmployees(employees);
+        department.setNumberOfEmployees(department.getEmployees().size());
+        department.setAverageSalary(department.getEmployees().stream()
+                .collect(Collectors.averagingDouble(User::getSalary)));
+        department.setNumberOfEmployees(department.getEmployees().size());
         department.setMedianSalary(department.getMedianSalary());
         departmentRepository.save(department);
     }

@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DepartmentDTO implements DTOEntity {
 
-    private Long id;
 
     @NotEmpty
     @NotNull

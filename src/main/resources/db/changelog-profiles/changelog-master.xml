@@ -8,18 +8,15 @@
     <changeSet id="1" author="damian">
 
 
-
-        <createTable tableName="roles" >
+        <createTable tableName="roles">
             <column name="role_id" type="BIGINT" autoIncrement="true">
-                <constraints  primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="true"/>
             </column>
 
         </createTable>
-
-
 
 
         <createTable tableName="departments">
@@ -33,35 +30,34 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="user_id" type="BIGINT">
-            </column>
+
             <column name="number_of_employees" type="integer"/>
 
             <column name="min_salary" type="double"
-                    />
+            />
 
             <column name="max_salary" type="double"
-                  />
+            />
 
             <column name="average_salary" type="double"
-                   />
+            />
 
             <column name="median_salary" type="double"
-                   />
+            />
 
 
         </createTable>
 
         <createTable tableName="users">
             <column name="user_id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true"  />
+                <constraints primaryKey="true"/>
             </column>
             <column name="first_name" type="varchar(100)">
-            <constraints nullable="true"/>
-        </column>
+                <constraints nullable="true"/>
+            </column>
             <column name="last_name" type="varchar(100)">
-            <constraints nullable="true"/>
-        </column>
+                <constraints nullable="true"/>
+            </column>
 
             <column name="password" type="varchar(100)">
                 <constraints nullable="true"/>
@@ -81,11 +77,11 @@
 
             <column name="salary" type="double"
             />
-            <column name="created_date" type="date">
+            <column name="created_date" type="datetime">
 
             </column>
 
-            <column name="login_time" type="date">
+            <column name="last_login_time" type="datetime">
 
             </column>
 
@@ -95,19 +91,21 @@
 
         <createTable tableName="user_role">
             <column name="role_id" type="BIGINT">
-                <constraints  foreignKeyName="fk_role_id" referencedTableName="roles" referencedColumnNames="role_id" nullable="false"/>
+                <constraints foreignKeyName="fk_role_id" referencedTableName="roles" referencedColumnNames="role_id"
+                             nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints  foreignKeyName="fk_user_id" referencedTableName="users" referencedColumnNames="user_id" nullable="false"/>
+                <constraints foreignKeyName="fk_user_id" referencedTableName="users" referencedColumnNames="user_id"
+                             nullable="false"/>
             </column>
 
         </createTable>
 
         <createTable tableName="phones">
 
-        <column name="phone_id" type="BIGINT" autoIncrement="true">
-            <constraints primaryKey="true" nullable="false"/>
-        </column>
+            <column name="phone_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="type" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
@@ -122,24 +120,22 @@
         <sql>ALTER TABLE phones ADD CONSTRAINT type CHECK (type = 'BUSINESS' OR type = 'PRIVATE')</sql>
 
 
+        <addForeignKeyConstraint baseColumnNames="department_department_id"
+                                 baseTableName="users"
 
-
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="departments"
-
-                                 constraintName="fk_user_id2"
+                                 constraintName="fk_user_department_id"
 
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
 
-                                 referencedColumnNames="user_id"
-                                 referencedTableName="users"
+                                 referencedColumnNames="department_id"
+                                 referencedTableName="departments"
                                  validate="true"/>
 
         <addForeignKeyConstraint baseColumnNames="employee_id"
                                  baseTableName="phones"
 
-                                 constraintName="fk_"
+                                 constraintName="fk_phones"
 
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
@@ -147,7 +143,6 @@
                                  referencedColumnNames="user_id"
                                  referencedTableName="users"
                                  validate="true"/>
-
 
 
     </changeSet>

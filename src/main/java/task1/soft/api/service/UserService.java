@@ -2,6 +2,7 @@ package task1.soft.api.service;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 
 import java.util.List;
@@ -23,8 +24,12 @@ public interface UserService {
 
     void createRoles();
 
-    void createEmployee(String firstName, String lastName, String email, String password);
+    void createEmployee(String firstName, String lastName, String email, String password, Department department);
 
 
     void updatePassword(User emp, String newPassword);
+
+    boolean isUserExist(User employee);
+
+    boolean isEmailExist(User employee);
 }

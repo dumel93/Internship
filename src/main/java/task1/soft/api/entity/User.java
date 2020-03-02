@@ -49,6 +49,7 @@ public class User {
     @ManyToOne
     private Department department;
 
+    @JsonIgnore
     @Column
     private boolean isHead = false;
 
@@ -61,10 +62,10 @@ public class User {
     private Date dateOfEmployment;
 
 
-    @CreationTimestamp
+
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "login_time")
-    private Date loginTime;
+    @Column(name = "last_login_time")
+    private Date lastLoginTime;
 
 
 }

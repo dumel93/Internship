@@ -4,10 +4,7 @@ package task1.soft.api.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import task1.soft.api.entity.Phone;
-import task1.soft.api.entity.PhoneType;
-import task1.soft.api.entity.Role;
-import task1.soft.api.entity.User;
+import task1.soft.api.entity.*;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
@@ -31,13 +28,16 @@ public class UserServiceImpl implements UserService {
 
     private final PhoneRepository phoneRepository;
 
+    private final DepartmentService departmentService;
+
     @Autowired
-    public UserServiceImpl(RoleRepository roleRepository, DepartmentRepository departmentRepository, BCryptPasswordEncoder passwordEncoder, UserRepository userRepository, PhoneRepository phoneRepository) {
+    public UserServiceImpl(RoleRepository roleRepository, DepartmentRepository departmentRepository, BCryptPasswordEncoder passwordEncoder, UserRepository userRepository, PhoneRepository phoneRepository, DepartmentService departmentService) {
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.phoneRepository = phoneRepository;
+        this.departmentService = departmentService;
     }
 
 
@@ -53,12 +53,12 @@ public class UserServiceImpl implements UserService {
         Role userRole = roleRepository.findByName("ROLE_CEO");
         ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
 
-        Set<Phone> phones= new HashSet<>();
-        Phone phone= new Phone();
+        Set<Phone> phones = new HashSet<>();
+        Phone phone = new Phone();
         phone.setNumber("533-202-020");
         phone.setType(PhoneType.BUSINESS);
         phone.setUser(ceo);
-        createPhones(phones,"444-444-234",PhoneType.PRIVATE,ceo);
+        createPhones(phones, "444-444-234", PhoneType.PRIVATE, ceo);
         phones.add(phone);
 
         phoneRepository.save(phones);
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType,User user) {
+    public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType, User user) {
         Phone phone = new Phone();
         phone.setNumber(number);
         phone.setType(phoneType);
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createEmployee(String firstName, String lastName, String email, String password) {
+    public void createEmployee(String firstName, String lastName, String email, String password, Department department) {
         User employee = new User();
 
 
@@ -105,14 +105,22 @@ public class UserServiceImpl implements UserService {
         employee.setLastName(lastName);
         employee.setEmail(email);
         employee.setActive(true);
+        employee.setSalary(200d);
         employee.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         employee.setDateOfEmployment(new Date());
-        employee.setDepartment(departmentRepository.findOne(1L));
+        employee.setDepartment(department);
+
+
         Set<Phone> phones = new HashSet<>();
         phoneRepository.save(phones);
         userRepository.save(employee);
+
+        department.getEmployees().add(employee);
+        departmentService.updateDepartment(department);
+
+
 
 
     }
@@ -122,6 +130,22 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         updateUser(user);
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean isUserExist(User employee) {
+        return false;
+    }
+
+    @Override
+    public boolean isEmailExist(User employee) {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getEmail().equals(employee.getEmail())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -135,7 +159,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         user.setDepartment(user.getDepartment());
         user.setDateOfEmployment(user.getDateOfEmployment());
-        user.setLoginTime(user.getLoginTime());
+        user.setLastLoginTime(user.getLastLoginTime());
         user.setActive(user.isActive());
         user.setHead(user.isHead());
         user.setSalary(user.getSalary());

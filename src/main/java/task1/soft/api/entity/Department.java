@@ -27,7 +27,8 @@ public class Department {
     @Column
     private String city;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "department", cascade = CascadeType.ALL)
     private List<User> employees;
 
     @Column
