@@ -14,11 +14,16 @@ public class Phone {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Enumerated(value = EnumType.STRING)
     @Column
     private PhoneType type;
 
     @Column
     private String number;
+
+    @ManyToOne
+    @JoinColumn(name="employee_id")
+    private	User user;
 
 
 

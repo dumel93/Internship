@@ -29,16 +29,12 @@ public class User {
     private String lastName;
 
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "phone_id")
-    private Set<Phone> phones = new HashSet<>();
-
-
     @Email
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column
+    @JsonIgnore
     private String password;
 
     @Column(name = "active")

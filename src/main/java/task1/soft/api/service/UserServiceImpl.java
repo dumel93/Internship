@@ -52,6 +52,16 @@ public class UserServiceImpl implements UserService {
         ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
         ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+
+        Set<Phone> phones= new HashSet<>();
+        Phone phone= new Phone();
+        phone.setNumber("533-202-020");
+        phone.setType(PhoneType.BUSINESS);
+        phone.setUser(ceo);
+        createPhones(phones,"444-444-234",PhoneType.PRIVATE,ceo);
+        phones.add(phone);
+
+        phoneRepository.save(phones);
         userRepository.save(ceo);
 
     }
@@ -77,16 +87,17 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType) {
+    public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType,User user) {
         Phone phone = new Phone();
         phone.setNumber(number);
         phone.setType(phoneType);
+        phone.setUser(user);
         phones.add(phone);
         return phones;
     }
 
     @Override
-    public void createEmployee(String firstName, String lastName, String email) {
+    public void createEmployee(String firstName, String lastName, String email, String password) {
         User employee = new User();
 
 
@@ -94,13 +105,12 @@ public class UserServiceImpl implements UserService {
         employee.setLastName(lastName);
         employee.setEmail(email);
         employee.setActive(true);
-        employee.setPassword(passwordEncoder.encode("haslo123"));
+        employee.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         employee.setDateOfEmployment(new Date());
         employee.setDepartment(departmentRepository.findOne(1L));
         Set<Phone> phones = new HashSet<>();
-        employee.setPhones(phones);
         phoneRepository.save(phones);
         userRepository.save(employee);
 
@@ -108,15 +118,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(User emp, Long id, String newPassword) {
-        emp.setPassword(newPassword);
-        updateUser(emp, id);
+    public void updatePassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        updateUser(user);
+        userRepository.save(user);
     }
 
     @Override
-    public void updateUser(User employee, Long id) {
-        employee.setId(id);
-        userRepository.save(employee);
+    public void updateUser(User user) {
+        user.setId(user.getId());
+        user.setFirstName(user.getFirstName());
+        user.setLastName(user.getLastName());
+        user.setEmail(user.getEmail());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
+        user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        user.setDepartment(user.getDepartment());
+        user.setDateOfEmployment(user.getDateOfEmployment());
+        user.setLoginTime(user.getLoginTime());
+        user.setActive(user.isActive());
+        user.setHead(user.isHead());
+        user.setSalary(user.getSalary());
+        userRepository.save(user);
+
     }
 
 

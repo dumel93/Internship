@@ -1,19 +1,20 @@
 package task1.soft.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import task1.soft.api.entity.Department;
-
+import javax.validation.constraints.NotNull;
 
 @Data
 public class EmployeeDTO {
 
     private Long employeeId;
 
+    @NotNull
     private String firstName;
 
+    @NotNull
     private String lastName;
 
+    @NotNull
     private String email;
 
     private DepartmentDTO department;

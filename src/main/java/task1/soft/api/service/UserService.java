@@ -19,12 +19,12 @@ public interface UserService {
     void save(User employee);
 
 
-    void updateUser(User employee, Long id);
+    void updateUser(User employee);
 
     void createRoles();
 
-    void createEmployee(String firstName, String lastName, String email);
+    void createEmployee(String firstName, String lastName, String email, String password);
 
 
-    void updatePassword(User emp, Long id, String newPassword);
+    void updatePassword(User emp, String newPassword);
 }

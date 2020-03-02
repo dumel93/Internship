@@ -53,9 +53,9 @@ public class DepartmentRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DepartmentDTO createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) throws ParseException {
-
-        return (DepartmentDTO) departmentService.createDepartment(departmentDTO.getName(),departmentDTO.getCity());
+    public Department createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) throws ParseException {
+        Department department=modelMapper.map(departmentDTO, Department.class);
+        return  departmentService.createDepartment(department.getName(),department.getCity());
 
     }
 
@@ -63,7 +63,7 @@ public class DepartmentRestController {
     @ResponseStatus(HttpStatus.OK)
     Department UpdateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id) throws ParseException {
         Department department=modelMapper.map(departmentDTO, Department.class);
-
+        department.setId(id);
         departmentService.updateDepartment(department);
         return department;
     }
@@ -72,10 +72,10 @@ public class DepartmentRestController {
     Department setMinSalaryOrMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id) throws ParseException {
 
         Department department=modelMapper.map(departmentSalariesDTO, Department.class);
-        department.setId(id);;
-        department.setMinSalary(departmentSalariesDTO.getMinSalary());
-        department.setMaxSalary(departmentSalariesDTO.getMaxSalary());
-        departmentService.save(department);
+        department.setMinSalary(department.getMinSalary());
+        department.setMaxSalary(department.getMaxSalary());
+        department.setId(id);
+        departmentService.updateDepartment(department);
         return department;
 
     }
@@ -83,7 +83,7 @@ public class DepartmentRestController {
     @DeleteMapping("/{id}")
     void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id) {
         Department department = departmentRepository.findOne(id);
-        if (department.getNumberOfEmployees() == 0) {
+        if (department.getNumberOfEmployees() == 0 && department!=null) {
             departmentRepository.delete(department);
         }
 

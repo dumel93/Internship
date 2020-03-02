@@ -1,12 +1,12 @@
 package task1.soft.api.restcontroller;
 
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.dto.EmployeePasswordDTO;
@@ -19,6 +19,7 @@ import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.UserService;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -34,31 +35,46 @@ public class EmployeeRestController {
 
     private final DepartmentRepository departmentRepository;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public EmployeeRestController(UserRepository userRepository, UserService userService, RoleRepository roleRepository, DepartmentRepository departmentRepository) {
+    public EmployeeRestController(UserRepository userRepository, UserService userService, RoleRepository roleRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
+        this.modelMapper = modelMapper;
     }
 
+    @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @GetMapping
     public List<User> getAllUsers() {
         return userService.findAll();
     }
 
+    @Secured({"ROLE_CEO", "ROLE_HEAD"})
+    @GetMapping("{/{id}")
+    public User getUserById(@PathVariable Long id){
+        return userRepository.findOne(id);
+    }
 
-    @Secured("ROLE_HEAD")
+
+    @Secured({"ROLE_CEO", "ROLE_HEAD","ROLE_EMPLOYEE"})
     @GetMapping("/departments")
     public List<User> findAllEmployeesOfDepartment(@AuthenticationPrincipal UserDetails auth) {
-
-        return userService.findAllEmployeesOfDepartment(userRepository.findByEmail(auth.getUsername()).getId());
+        User currentUser=userRepository.findByEmail(auth.getUsername());
+        currentUser.setLoginTime(new Date());
+        userService.updateUser(currentUser);
+        return userService.findAllEmployeesOfDepartment(currentUser.getId());
 
     }
 
-    @Secured({"ROLE_CEO", "ROLE_HEAD"})
+    @Secured({"ROLE_CEO", "ROLE_HEAD","ROLE_EMPLOYEE"})
     @GetMapping("/departments/{id}")
-    public List<User> findAllEmployeesOfDepartment(@PathVariable Long id) {
+    public List<User> findAllEmployeesOfDepartment(@PathVariable Long id,@AuthenticationPrincipal UserDetails auth) {
+        User currentUser=userRepository.findByEmail(auth.getUsername());
+        currentUser.setLoginTime(new Date());
+        userService.updateUser(currentUser);
         return userService.findAllEmployeesOfDepartment(id);
     }
 
@@ -106,7 +122,7 @@ public class EmployeeRestController {
 
         User emp = userRepository.findOne(id);
         String newPassword = employee.getPassword();
-        userService.updatePassword(emp,id,newPassword);
+        userService.updatePassword(emp,newPassword);
     }
 
     @Secured("ROLE_HEAD")
@@ -122,7 +138,7 @@ public class EmployeeRestController {
 
             if (salary >= emp.getDepartment().getMinSalary() && salary <= emp.getDepartment().getMaxSalary()) {
                 emp.setSalary(salary);
-                userService.updateUser(emp, id);
+                userService.updateUser(emp);
             } else {
                 System.out.printf("wrong amount");
             }
@@ -137,7 +153,7 @@ public class EmployeeRestController {
         User emp = userRepository.findOne(id);
         if (userService.findAllEmployeesOfDepartment(userRepository.findByEmail(auth.getUsername()).getId()).contains(emp)) {
             emp.setActive(false);
-            userService.updateUser(emp, id);
+            userService.updateUser(emp);
 
         } else {
             System.out.println("this head do not have employee in this department ");

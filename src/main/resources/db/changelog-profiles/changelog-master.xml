@@ -67,9 +67,6 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="phone_id" type="BIGINT">
-                <constraints nullable="true"/>
-            </column>
             <column name="email" type="varchar(50)">
                 <constraints unique="true" nullable="false"/>
             </column>
@@ -111,12 +108,16 @@
         <column name="phone_id" type="BIGINT" autoIncrement="true">
             <constraints primaryKey="true" nullable="false"/>
         </column>
-            <column name="type" type="integer">
+            <column name="type" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="number" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="employee_id" type="BIGINT">
+            </column>
+
+
         </createTable>
         <sql>ALTER TABLE phones ADD CONSTRAINT type CHECK (type = 'BUSINESS' OR type = 'PRIVATE')</sql>
 
@@ -135,16 +136,16 @@
                                  referencedTableName="users"
                                  validate="true"/>
 
-        <addForeignKeyConstraint baseColumnNames="phone_id"
-                                 baseTableName="users"
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="phones"
 
-                                 constraintName="fk3"
+                                 constraintName="fk_"
 
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
 
-                                 referencedColumnNames="phone_id"
-                                 referencedTableName="phones"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="users"
                                  validate="true"/>
 
 
