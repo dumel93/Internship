@@ -1,7 +1,5 @@
 package task1.soft.api.restcontroller;
 
-
-import ch.qos.logback.core.db.dialect.DBUtil;
 import org.apache.el.parser.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.DepartmentService;
-import task1.soft.api.util.DtoUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -22,13 +19,13 @@ import java.util.List;
 
 @Secured("ROLE_CEO")
 @RestController
-@RequestMapping(produces = "application/json",value = "/departments")
+@RequestMapping(produces = "application/json", value = "/departments")
 public class DepartmentRestController {
 
     private final DepartmentRepository departmentRepository;
     private final DepartmentService departmentService;
     private final UserRepository userRepository;
-    private  final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public DepartmentRestController(DepartmentRepository departmentRepository, DepartmentService departmentService, UserRepository userRepository, ModelMapper modelMapper) {
@@ -37,7 +34,6 @@ public class DepartmentRestController {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
-
 
 
     @GetMapping(value = "/")
@@ -54,15 +50,15 @@ public class DepartmentRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Department createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) throws ParseException {
-        Department department=modelMapper.map(departmentDTO, Department.class);
-        return  departmentService.createDepartment(department.getName(),department.getCity());
+        Department department = modelMapper.map(departmentDTO, Department.class);
+        return departmentService.createDepartment(department.getName(), department.getCity());
 
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     Department UpdateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id) throws ParseException {
-        Department department=modelMapper.map(departmentDTO, Department.class);
+        Department department = modelMapper.map(departmentDTO, Department.class);
         department.setId(id);
         departmentService.updateDepartment(department);
         return department;
@@ -71,7 +67,7 @@ public class DepartmentRestController {
     @PutMapping("/salaries/{id}")
     Department setMinSalaryOrMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id) throws ParseException {
 
-        Department department=modelMapper.map(departmentSalariesDTO, Department.class);
+        Department department = modelMapper.map(departmentSalariesDTO, Department.class);
         department.setMinSalary(department.getMinSalary());
         department.setMaxSalary(department.getMaxSalary());
         department.setId(id);
@@ -83,7 +79,7 @@ public class DepartmentRestController {
     @DeleteMapping("/{id}")
     void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id) {
         Department department = departmentRepository.findOne(id);
-        if (department.getNumberOfEmployees() == 0 && department!=null) {
+        if (department.getNumberOfEmployees() == 0 && department != null) {
             departmentRepository.delete(department);
         }
 

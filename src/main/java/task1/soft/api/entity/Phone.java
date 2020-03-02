@@ -25,7 +25,5 @@ public class Phone {
     @JoinColumn(name="employee_id")
     private	User user;
 
-
-
 }
 

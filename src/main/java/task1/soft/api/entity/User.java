@@ -28,7 +28,6 @@ public class User {
     @Column
     private String lastName;
 
-
     @Email
     @Column(nullable = false, unique = true)
     private String email;
@@ -60,7 +59,6 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date")
     private Date dateOfEmployment;
-
 
 
     @Temporal(TemporalType.TIMESTAMP)

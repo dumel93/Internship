@@ -65,7 +65,7 @@ public class EmployeeRestController {
     }
 
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
-    @GetMapping("{/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<User> getEmployeeById(@PathVariable Long id) {
         User user = userRepository.findOne(id);
         if (user == null) {
@@ -95,6 +95,7 @@ public class EmployeeRestController {
     @GetMapping("/departments/{id}")
     public ResponseEntity<List<User>> findEmployeesOfDepartment(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
         User currentUser = userRepository.findByEmail(auth.getUsername());
+
         currentUser.setLastLoginTime(new Date());
         userService.updateUser(currentUser);
         List<User> users = userService.findAllEmployeesOfDepartment(id);
@@ -112,8 +113,9 @@ public class EmployeeRestController {
     @PostMapping("/")
     public ResponseEntity createEmployee(@RequestBody EmployeeDTO employeeDTO) {
         User employee = modelMapper.map(employeeDTO, User.class);
-
-
+        User ceo=userRepository.findAll().get(0);
+        ceo.setLastLoginTime(new Date());
+        userService.updateUser(ceo);
 
         logger.info("Creating User : {}", employee);
         if (userService.isEmailExist(employee)) {
@@ -129,7 +131,9 @@ public class EmployeeRestController {
     @PutMapping("/head/{id}")
     public ResponseEntity<User> setHead(@PathVariable Long id) {
         User employee = userRepository.findOne(id);
-
+        User ceo=userRepository.findAll().get(0);
+        ceo.setLastLoginTime(new Date());
+        userService.updateUser(ceo);
         if (employee == null) {
             logger.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
@@ -137,18 +141,17 @@ public class EmployeeRestController {
         }
 
         employee.setHead(true);
-        Role userRole = roleRepository.findByName("ROLE_HEAD");
-        employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         userService.updateUser(employee);
         return new ResponseEntity<User>(employee, HttpStatus.OK);
     }
 
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
-    @PostMapping("/createE")
+    @PostMapping("/departments")
     @ResponseStatus(HttpStatus.CREATED)
     public User createEmployeeInHeadDepartment(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) {
 
         User employee = modelMapper.map(employeeDTO, User.class);
+        employee.setLastLoginTime(new Date());
         employee.setFirstName(employee.getFirstName());
         employee.setLastName(employee.getLastName());
         employee.setActive(true);
@@ -167,6 +170,7 @@ public class EmployeeRestController {
     @PutMapping("/password/{id}")
     public ResponseEntity updatePassword(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeePasswordDTO employeePasswordDTO, @PathVariable Long id) {
         User employee = modelMapper.map(employeePasswordDTO, User.class);
+        employee.setLastLoginTime(new Date());
         if (employee == null) {
             logger.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),

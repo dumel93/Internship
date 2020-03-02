@@ -99,8 +99,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createEmployee(String firstName, String lastName, String email, String password, Department department) {
         User employee = new User();
-
-
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
         employee.setEmail(email);
@@ -112,17 +110,12 @@ public class UserServiceImpl implements UserService {
         employee.setDateOfEmployment(new Date());
         employee.setDepartment(department);
 
-
         Set<Phone> phones = new HashSet<>();
         phoneRepository.save(phones);
         userRepository.save(employee);
 
         department.getEmployees().add(employee);
         departmentService.updateDepartment(department);
-
-
-
-
     }
 
     @Override
@@ -155,8 +148,10 @@ public class UserServiceImpl implements UserService {
         user.setLastName(user.getLastName());
         user.setEmail(user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
-        user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        if (user.isHead()) {
+            Role userRole = roleRepository.findByName("ROLE_HEAD");
+            user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        }
         user.setDepartment(user.getDepartment());
         user.setDateOfEmployment(user.getDateOfEmployment());
         user.setLastLoginTime(user.getLastLoginTime());
@@ -166,7 +161,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
     }
-
 
     @Override
     public void createRoles() {
@@ -180,6 +174,5 @@ public class UserServiceImpl implements UserService {
         roleRepository.save(r2);
         roleRepository.save(r3);
     }
-
 
 }

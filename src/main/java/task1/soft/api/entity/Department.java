@@ -1,15 +1,9 @@
 package task1.soft.api.entity;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Data
 @Entity
@@ -49,7 +43,5 @@ public class Department {
     public Department() {
         employees = new ArrayList<>();
     }
-
-
 
 }

@@ -1,7 +1,5 @@
 package task1.soft.api.service;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 

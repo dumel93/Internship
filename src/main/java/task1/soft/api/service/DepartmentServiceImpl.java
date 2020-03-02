@@ -18,44 +18,19 @@ import java.util.stream.Collectors;
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final UserRepository userRepository;
-
     private final DepartmentRepository departmentRepository;
-    private final ModelMapper modelMapper;
 
     @Autowired
     public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
-        this.modelMapper = modelMapper;
     }
-//
-//    @Override
-//    public DTOEntity createDepartment(String name, String city) {
-//        Department department = readDepartment(name, city);
-////        List<Double> doubleList=employees.stream().map(User::getSalary).collect(Collectors.toList());
-////        Double[] array = new Double[department.getEmployees().size()];
-////        doubleList.toArray(array);
-//        departmentRepository.save(department);
-//        new DtoUtils(modelMapper);
-//        return DtoUtils.convertToDto(department, new DepartmentDTO());
-
-
-//        department.setMedianSalary(DoubleStream.of().sorted().toArray()[array.length / 2]);
-
-
-//    }
-
 
     public Department createDepartment(String name, String city) {
         Department department = new Department();
         department.setName(name);
         department.setCity(city);
-        List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
-        department.setEmployees(employees);
-        department.setNumberOfEmployees(department.getEmployees().size());
-        department.setAverageSalary(department.getEmployees().stream()
-                .collect(Collectors.averagingDouble(User::getSalary)));
-        department.setNumberOfEmployees(department.getEmployees().size());
+        setEmployeesData(department);
         departmentRepository.save(department);
         return department;
     }
@@ -68,11 +43,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void updateDepartment(Department department) {
 
-
         department.setId(department.getId());
-
         department.setName(department.getName());
         department.setCity(department.getCity());
+        setEmployeesData(department);
+        departmentRepository.save(department);
+    }
+
+    private void setEmployeesData(Department department) {
         List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
         department.setEmployees(employees);
         department.setNumberOfEmployees(department.getEmployees().size());
@@ -80,8 +58,13 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .collect(Collectors.averagingDouble(User::getSalary)));
         department.setNumberOfEmployees(department.getEmployees().size());
         department.setMedianSalary(department.getMedianSalary());
-        departmentRepository.save(department);
+        //List<Double> doubleList=employees.stream().map(User::getSalary).collect(Collectors.toList());
+////        Double[] array = new Double[department.getEmployees().size()];
+////        doubleList.toArray(array);
+//        departmentRepository.save(department);
+//        new DtoUtils(modelMapper);
+//        return DtoUtils.convertToDto(department, new DepartmentDTO());
+//        department.setMedianSalary(DoubleStream.of().sorted().toArray()[array.length / 2]);
     }
-
 
 }
