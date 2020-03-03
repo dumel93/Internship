@@ -34,10 +34,10 @@ public class Department {
     private Double maxSalary = 0d;
 
     @Column
-    private Double averageSalary;
+    private Double averageSalary=0d;
 
     @Column
-    private Double medianSalary;
+    private Double medianSalary=0d;
 
     public Department() {
         employees = new ArrayList<>();

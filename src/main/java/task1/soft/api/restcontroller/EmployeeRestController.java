@@ -24,7 +24,6 @@ import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
 import task1.soft.api.util.CustomErrorType;
 import task1.soft.api.util.SetterLoginTime;
-
 import javax.validation.constraints.Min;
 import java.util.List;
 
@@ -102,8 +101,6 @@ public class EmployeeRestController {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<List<User>>(users, HttpStatus.OK);
-
-
     }
 
     // -------------------Create an Employee-------------------------------------------
@@ -212,7 +209,6 @@ public class EmployeeRestController {
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
-
         Double salary = employee.getSalary();
         if (salary >= employee.getDepartment().getMinSalary() && salary <= employee.getDepartment().getMaxSalary()) {
             employee.setSalary(salary);
@@ -238,13 +234,9 @@ public class EmployeeRestController {
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
-
-
         employee.setActive(false);
         userService.updateUser(employee);
         return new ResponseEntity<User>(employee, HttpStatus.OK);
-
-
     }
 
     // -------------------Delete an Employee-------------------------------------------
