@@ -3,6 +3,7 @@ package task1.soft.api.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -16,9 +17,11 @@ public class Phone {
 
     @Enumerated(value = EnumType.STRING)
     @Column
+    @NotNull
     private PhoneType type;
 
     @Column
+    @NotNull
     private String number;
 
     @ManyToOne

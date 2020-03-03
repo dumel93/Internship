@@ -1,10 +1,14 @@
 package task1.soft.api.dto;
 
 import lombok.Data;
-import task1.soft.api.util.DTOEntity;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
 
 @Data
-public class EmployeePasswordDTO implements DTOEntity {
+public class EmployeePasswordDTO {
 
+    @NotNull
+    @Length(min = 6)
     private String password;
 }

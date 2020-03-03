@@ -1,14 +1,19 @@
 package task1.soft.api.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -31,12 +36,12 @@ public class User {
     private String lastName;
 
     @Email
-    @Column(nullable = false, unique = true)
+    @NotNull
+    @Column(unique = true)
     private String email;
 
     @Column
-    @Length(min = 5, message = "*Your password must have at least 5 characters")
-    @JsonIgnore
+    @Length(min = 6, message = "*Your password must have at least 5 characters")
     private String password;
 
     @Column(name = "active")
@@ -47,26 +52,25 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @JsonIgnore
+
     @ManyToOne
     private Department department;
 
     @JsonIgnore
     @Column
-    private boolean isHead = false;
+    private boolean isHead;
 
     @Column
-    private Double salary;
+    @Min(value = 0)
+    private BigDecimal salary;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
     @Column(name = "created_date")
-    private Date dateOfEmployment;
+    private LocalDate dateOfEmployment=LocalDate.now();
 
-
-    @Temporal(TemporalType.TIMESTAMP)
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "last_login_time")
-    private Date lastLoginTime;
+    private LocalDateTime lastLoginTime;
 
 
 }

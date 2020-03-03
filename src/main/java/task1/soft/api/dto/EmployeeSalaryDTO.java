@@ -1,9 +1,15 @@
 package task1.soft.api.dto;
 
 import lombok.Data;
-import task1.soft.api.util.DTOEntity;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Data
-public class EmployeeSalaryDTO implements DTOEntity {
-    private Double salary;
+public class EmployeeSalaryDTO {
+
+    @Min(value = 0)
+    @NotNull
+    private BigDecimal salary;
 }

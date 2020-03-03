@@ -2,6 +2,9 @@ package task1.soft.api.entity;
 
 import lombok.Data;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,31 +19,22 @@ public class Department {
     private Long id;
 
     @Column
+    @NotNull
     private String name;
 
     @Column
+    @NotNull
     private String city;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "department", cascade = CascadeType.ALL)
-    private List<User> employees;
+    private List<User> employees=new ArrayList<>();;
 
     @Column
-    private Integer numberOfEmployees;
+    @Min(value = 0)
+    private BigDecimal minSalary;
 
     @Column
-    private Double minSalary = 0d;
-
-    @Column
-    private Double maxSalary = 0d;
-
-    @Column
-    private Double averageSalary=0d;
-
-    @Column
-    private Double medianSalary=0d;
-
-    public Department() {
-        employees = new ArrayList<>();
-    }
+    @Min(value = 0)
+    private BigDecimal maxSalary;
 
 }

@@ -1,9 +1,8 @@
 package task1.soft.api.restcontroller;
 
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,38 +16,25 @@ import task1.soft.api.dto.EmployeePasswordDTO;
 import task1.soft.api.dto.EmployeeSalaryDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-import task1.soft.api.repo.DepartmentRepository;
-import task1.soft.api.repo.RoleRepository;
-import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
 import task1.soft.api.util.CustomErrorType;
 import task1.soft.api.util.SetterLoginTime;
 import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Validated
 @RestController
+@Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping(value = "/employees", produces = "application/json")
 public class EmployeeRestController {
 
-    private final UserRepository userRepository;
+
     private final UserService userService;
-    private final RoleRepository roleRepository;
-    private final DepartmentRepository departmentRepository;
     private final DepartmentService departmentService;
     private final ModelMapper modelMapper;
-    public static final Logger logger = LoggerFactory.getLogger(EmployeeRestController.class);
-
-    @Autowired
-    public EmployeeRestController(UserRepository userRepository, UserService userService, RoleRepository roleRepository, DepartmentRepository departmentRepository, DepartmentService departmentService, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.userService = userService;
-        this.roleRepository = roleRepository;
-        this.departmentRepository = departmentRepository;
-        this.departmentService = departmentService;
-        this.modelMapper = modelMapper;
-    }
 
     // -------------------Get an Employee/s-------------------------------------------
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
@@ -66,9 +52,9 @@ public class EmployeeRestController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getEmployeeById(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        User user = userRepository.findOne(id);
+        User user = userService.findUser(id);
         if (user == null) {
-            logger.error("User with id {} not found.", id);
+            log.error("User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("User with id " + id
                     + " not found"), HttpStatus.NOT_FOUND);
         }
@@ -80,7 +66,7 @@ public class EmployeeRestController {
     @GetMapping("/departments")
     public ResponseEntity<List<User>> findAllEmployeesOfDepartment(@AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        User currentUser = userRepository.findByEmail(auth.getUsername());
+        User currentUser = userService.findByEmail(auth.getUsername());
         Department department = currentUser.getDepartment();
         List<User> users = userService.findAllEmployeesOfDepartment(department.getId());
         if (users.isEmpty()) {
@@ -93,9 +79,9 @@ public class EmployeeRestController {
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @GetMapping("/departments/{id}")
     public ResponseEntity<List<User>> findEmployeesOfDepartment(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
-        User currentUser = userRepository.findByEmail(auth.getUsername());
+
         SetterLoginTime.setLoginTime(auth);
-        userService.updateUser(currentUser);
+
         List<User> users = userService.findAllEmployeesOfDepartment(id);
         if (users.isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -110,13 +96,13 @@ public class EmployeeRestController {
     public ResponseEntity createEmployee(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) {
         User employee = modelMapper.map(employeeDTO, User.class);
         SetterLoginTime.setLoginTime(auth);
-        logger.info("Creating User : {}", employee);
+        log.info("Creating User : {}", employee);
         if (userService.isEmailExist(employee)) {
-            logger.error("Unable to create. A User with email {} already exist", employee.getEmail());
+            log.error("Unable to create. A User with email {} already exist", employee.getEmail());
             return new ResponseEntity(new CustomErrorType("Unable to create. A User with email " +
                     employee.getEmail() + " already exist."), HttpStatus.CONFLICT);
         }
-        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getDepartment());
+        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getSalary(),employee.getDepartment());
         return new ResponseEntity<String>(HttpStatus.CREATED);
     }
 
@@ -129,15 +115,15 @@ public class EmployeeRestController {
         User employee = modelMapper.map(employeeDTO, User.class);
 
         if (userService.isEmailExist(employee)) {
-            logger.error("Unable to create. A User with email {} already exist", employee.getEmail());
+            log.error("Unable to create. A User with email {} already exist", employee.getEmail());
             return new ResponseEntity(new CustomErrorType("Unable to create. A User with email " +
                     employee.getEmail() + " already exist."), HttpStatus.CONFLICT);
         }
-        Department department = userRepository.findByEmail(auth.getUsername()).getDepartment();
+        Department department = userService.findByEmail(auth.getUsername()).getDepartment();
         department.getEmployees().add(employee);
         departmentService.updateDepartment(department);
         employee.setDepartment(department);
-        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getDepartment());
+        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getSalary(),employee.getDepartment());
         return new ResponseEntity<String>(HttpStatus.CREATED);
 
     }
@@ -151,9 +137,9 @@ public class EmployeeRestController {
         SetterLoginTime.setLoginTime(auth);
         User employee = modelMapper.map(employeePasswordDTO, User.class);
         employee.setId(id);
-        Department department = userRepository.findByEmail(auth.getUsername()).getDepartment();
+        Department department = userService.findByEmail(auth.getUsername()).getDepartment();
         if (!userService.findAllEmployeesOfDepartment(department.getId()).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
@@ -162,14 +148,14 @@ public class EmployeeRestController {
     }
 
     @Secured("ROLE_CEO")
-    @PutMapping("/head/{id}")
+    @PutMapping("/departments/head/{id}")
     public ResponseEntity<User> setHead(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
 
         SetterLoginTime.setLoginTime(auth);
-        User employee = userRepository.findOne(id);
-        Department department = userRepository.findByEmail(auth.getUsername()).getDepartment();
-        if (employee == null || !userService.findAllEmployeesOfDepartment(department.getId()).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+        User employee = userService.findUser(id);
+        Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
+        if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
@@ -181,14 +167,14 @@ public class EmployeeRestController {
 
 
     @Secured("ROLE_HEAD")
-    @PutMapping("/password/{id}")
+    @PutMapping("{id}/password/")
     public ResponseEntity updatePassword(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeePasswordDTO employeePasswordDTO, @PathVariable Long id) {
 
         SetterLoginTime.setLoginTime(auth);
-        User employee = userRepository.findOne(id);
-        Department departmentOFHead = userRepository.findByEmail(auth.getUsername()).getDepartment();
+        User employee = userService.findUser(id);
+        Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
@@ -203,14 +189,14 @@ public class EmployeeRestController {
 
         SetterLoginTime.setLoginTime(auth);
         User employee = modelMapper.map(employeeSalaryDTO, User.class);
-        Long departmentId = userRepository.findByEmail(auth.getUsername()).getDepartment().getId();
+        Long departmentId = userService.findByEmail(auth.getUsername()).getDepartment().getId();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentId).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
-        Double salary = employee.getSalary();
-        if (salary >= employee.getDepartment().getMinSalary() && salary <= employee.getDepartment().getMaxSalary()) {
+        BigDecimal salary = employee.getSalary();
+        if (salary.compareTo(employee.getDepartment().getMinSalary()) >= 0 && salary.compareTo(employee.getDepartment().getMaxSalary()) <= 0) {
             employee.setSalary(salary);
             userService.updateUser(employee);
             return new ResponseEntity<User>(employee, HttpStatus.OK);
@@ -227,10 +213,10 @@ public class EmployeeRestController {
     public ResponseEntity<User> disable(@AuthenticationPrincipal UserDetails auth, @PathVariable Long id) {
 
         SetterLoginTime.setLoginTime(auth);
-        User employee = userRepository.findOne(id);
-        Department departmentOFHead = userRepository.findByEmail(auth.getUsername()).getDepartment();
+        User employee = userService.findUser(id);
+        Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
@@ -244,13 +230,13 @@ public class EmployeeRestController {
     @DeleteMapping("/{id}")
     ResponseEntity deleteEmployeeByCeo(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        User employee = userRepository.findOne(id);
+        User employee = userService.findUser(id);
         if (employee == null) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to delete. Employee with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
-        userRepository.delete(employee);
+        userService.delete(employee);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -258,14 +244,14 @@ public class EmployeeRestController {
     @DeleteMapping("/departments/{id}")
     ResponseEntity deleteEmployeeByHead(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        User employee = userRepository.findOne(id);
-        Department departmentOFHead = userRepository.findByEmail(auth.getUsername()).getDepartment();
+        User employee = userService.findUser(id);
+        Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
-            logger.error("Unable to update. User with id {} not found.", id);
+            log.error("Unable to update. User with id {} not found.", id);
             return new ResponseEntity(new CustomErrorType("Unable to delete. Employee with id " + id + " not found."),
                     HttpStatus.NOT_FOUND);
         }
-        userRepository.delete(employee);
+        userService.delete(employee);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

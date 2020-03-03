@@ -2,6 +2,7 @@ package task1.soft.api.entity;
 
 import lombok.Data;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -15,6 +16,7 @@ public class Role {
     private Long id;
 
     @Column
+    @NotNull
     private String name;
 
 }

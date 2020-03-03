@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.UserService;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Component
 public class SetterLoginTime {
@@ -22,10 +21,9 @@ public class SetterLoginTime {
         SetterLoginTime.userService = userService;
     }
 
-
     public static void setLoginTime(@AuthenticationPrincipal UserDetails auth) {
         User currentUser = userRepository.findByEmail(auth.getUsername());
-        currentUser.setLastLoginTime(new Date());
+        currentUser.setLastLoginTime(LocalDateTime.now());
         userService.updateUser(currentUser);
     }
 }

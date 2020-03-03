@@ -1,5 +1,6 @@
 package task1.soft.api.service;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,23 +8,18 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
+
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
-
-    @Autowired
-    public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.departmentRepository = departmentRepository;
-    }
 
     public Department createDepartment(String name, String city) {
         Department department = new Department();
@@ -49,14 +45,29 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentRepository.save(department);
     }
 
+    @Override
+    public List<Department> findAll() {
+        return departmentRepository.findAll();
+    }
+
+    @Override
+    public Department findOne(Long id) {
+        return departmentRepository.findOne(id);
+    }
+
+    @Override
+    public void delete(Department department) {
+        departmentRepository.delete(department);
+    }
+
     private void setEmployeesData(Department department) {
         List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
         department.setEmployees(employees);
-        department.setNumberOfEmployees(department.getEmployees().size());
-        department.setAverageSalary(department.getEmployees().stream()
-                .collect(Collectors.averagingDouble(User::getSalary)));
-        department.setNumberOfEmployees(department.getEmployees().size());
-        department.setMedianSalary(department.getMedianSalary());
+//        department.setNumberOfEmployees(department.getEmployees().size());
+//        department.setAverageSalary(department.getEmployees().stream()
+//                .collect(Collectors.averagingDouble(User::getSalary)));
+//        department.setNumberOfEmployees(department.getEmployees().size());
+//        department.setMedianSalary(department.getMedianSalary());
         //List<Double> doubleList=employees.stream().map(User::getSalary).collect(Collectors.toList());
 ////        Double[] array = new Double[department.getEmployees().size()];
 ////        doubleList.toArray(array);

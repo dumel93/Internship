@@ -1,6 +1,7 @@
 package task1.soft.api.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,16 +11,17 @@ import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 
 @Service
 @Transactional
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
-
-    private final DepartmentRepository departmentRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -29,24 +31,13 @@ public class UserServiceImpl implements UserService {
 
     private final DepartmentService departmentService;
 
-    @Autowired
-    public UserServiceImpl(RoleRepository roleRepository, DepartmentRepository departmentRepository, BCryptPasswordEncoder passwordEncoder, UserRepository userRepository, PhoneRepository phoneRepository, DepartmentService departmentService) {
-        this.roleRepository = roleRepository;
-        this.departmentRepository = departmentRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
-        this.phoneRepository = phoneRepository;
-        this.departmentService = departmentService;
-    }
-
-
     @Override
     public void setupCEO() {
         User ceo = new User();
         ceo.setFirstName("admin");
         ceo.setLastName("admin");
         ceo.setEmail("ceo@pgs.com");
-        ceo.setSalary(100000d);
+        ceo.setSalary(new BigDecimal("20000"));
         ceo.setActive(true);
         ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
@@ -68,6 +59,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void findAllUsers() {
         userRepository.findAll();
+    }
+
+    @Override
+    public User findUser(Long id) {
+        return userRepository.findOne(id);
     }
 
     @Override
@@ -96,17 +92,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createEmployee(String firstName, String lastName, String email, String password, Department department) {
+    public void createEmployee(String firstName, String lastName, String email, String password, BigDecimal salary, Department department) {
         User employee = new User();
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
         employee.setEmail(email);
         employee.setActive(true);
-        employee.setSalary(0d);
+        employee.setSalary(salary);
         employee.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
-        employee.setDateOfEmployment(new Date());
+        employee.setDateOfEmployment(LocalDate.now());
         employee.setDepartment(department);
 
         Set<Phone> phones = new HashSet<>();
@@ -124,10 +120,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public boolean isUserExist(User employee) {
-        return false;
-    }
+
 
     @Override
     public boolean isEmailExist(User employee) {
@@ -138,6 +131,16 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
+    }
+
+    @Override
+    public void delete(User employee) {
+        userRepository.delete(employee);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override

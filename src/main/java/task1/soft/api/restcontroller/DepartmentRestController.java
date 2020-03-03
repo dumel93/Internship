@@ -1,5 +1,7 @@
 package task1.soft.api.restcontroller;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.el.parser.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
 import task1.soft.api.entity.Department;
-import task1.soft.api.entity.User;
-import task1.soft.api.repo.DepartmentRepository;
-import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.util.CustomErrorType;
 import task1.soft.api.util.SetterLoginTime;
@@ -26,28 +25,21 @@ import java.util.List;
 @Validated
 @Secured("ROLE_CEO")
 @RestController
+@Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping(produces = "application/json", value = "/departments")
 public class DepartmentRestController {
 
-    private final DepartmentRepository departmentRepository;
-    private final DepartmentService departmentService;
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
 
-    @Autowired
-    public DepartmentRestController(DepartmentRepository departmentRepository, DepartmentService departmentService, UserRepository userRepository, ModelMapper modelMapper) {
-        this.departmentRepository = departmentRepository;
-        this.departmentService = departmentService;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-    }
+    private final DepartmentService departmentService;
+    private final ModelMapper modelMapper;
 
     // -------------------getDepartments-------------------------------------------
     @Secured("ROLE_HEAD")
     @GetMapping
     public ResponseEntity<List<Department>> getDepartments(@AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        List<Department> departments = departmentRepository.findAll();
+        List<Department> departments = departmentService.findAll();
         if (departments.isEmpty()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
@@ -58,7 +50,7 @@ public class DepartmentRestController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Department> getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        Department department = departmentRepository.findOne(id);
+        Department department = departmentService.findOne(id);
         if (department == null) {
             return new ResponseEntity(new CustomErrorType("Department with id " + id
                     + " not found"), HttpStatus.NOT_FOUND);
@@ -103,9 +95,9 @@ public class DepartmentRestController {
     @DeleteMapping("/{id}")
     ResponseEntity deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
         SetterLoginTime.setLoginTime(auth);
-        Department department = departmentRepository.findOne(id);
-        if (department.getNumberOfEmployees() == 0) {
-            departmentRepository.delete(department);
+        Department department = departmentService.findOne(id);
+        if (department.getEmployees().size() == 0) {
+            departmentService.delete(department);
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
 

@@ -30,15 +30,10 @@
                 <constraints nullable="true"/>
             </column>
 
-            <column name="number_of_employees" type="integer"/>
 
-            <column name="min_salary" type="double"/>
+            <column name="min_salary" type="NUMERIC"/>
 
-            <column name="max_salary" type="double"/>
-
-            <column name="average_salary" type="double"/>
-
-            <column name="median_salary" type="double"/>
+            <column name="max_salary" type="NUMERIC"/>
 
 
         </createTable>
@@ -69,8 +64,8 @@
             <column name="is_head" type="boolean"
                     defaultValueBoolean="false"/>
 
-            <column name="salary" type="double"/>
-            <column name="created_date" type="datetime">
+            <column name="salary" type="NUMERIC"/>
+            <column name="created_date" type="date">
             </column>
 
             <column name="last_login_time" type="datetime">
