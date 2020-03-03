@@ -1,8 +1,6 @@
 package task1.soft.api.entity;
 
-
 import lombok.Data;
-
 import javax.persistence.*;
 
 @Entity

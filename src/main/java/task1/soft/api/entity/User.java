@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -33,6 +35,7 @@ public class User {
     private String email;
 
     @Column
+    @Length(min = 5, message = "*Your password must have at least 5 characters")
     @JsonIgnore
     private String password;
 

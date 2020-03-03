@@ -7,7 +7,6 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
-
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;

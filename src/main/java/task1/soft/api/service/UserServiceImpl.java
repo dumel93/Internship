@@ -9,7 +9,6 @@ import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
-
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -103,7 +102,7 @@ public class UserServiceImpl implements UserService {
         employee.setLastName(lastName);
         employee.setEmail(email);
         employee.setActive(true);
-        employee.setSalary(200d);
+        employee.setSalary(0d);
         employee.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));

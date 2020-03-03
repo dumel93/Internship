@@ -8,12 +8,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DepartmentSalariesDTO  implements DTOEntity {
 
-
-    @NotNull
     @Min(value = 0)
     private Double minSalary;
 
-    @NotNull
     @Min(value = 0)
     private Double maxSalary;
 }

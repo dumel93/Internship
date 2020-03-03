@@ -4,19 +4,26 @@ import org.apache.el.parser.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
 import task1.soft.api.entity.Department;
+import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
 import task1.soft.api.service.DepartmentService;
+import task1.soft.api.util.CustomErrorType;
+import task1.soft.api.util.SetterLoginTime;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+@Validated
 @Secured("ROLE_CEO")
 @RestController
 @RequestMapping(produces = "application/json", value = "/departments")
@@ -35,54 +42,74 @@ public class DepartmentRestController {
         this.modelMapper = modelMapper;
     }
 
-
-    @GetMapping(value = "/")
-    public List<Department> getDepartments() {
-        return departmentRepository.findAll();
+    // -------------------getDepartments-------------------------------------------
+    @Secured("ROLE_HEAD")
+    @GetMapping
+    public ResponseEntity<List<Department>> getDepartments(@AuthenticationPrincipal UserDetails auth) {
+        SetterLoginTime.setLoginTime(auth);
+        List<Department> departments = departmentRepository.findAll();
+        if (departments.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<List<Department>>(departments, HttpStatus.OK);
     }
 
-
+    @Secured("ROLE_HEAD")
     @GetMapping(value = "/{id}")
-    public Department getDepartment(@PathVariable("id") Long id) {
-        return departmentRepository.findOne(id);
+    public ResponseEntity<Department> getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) {
+        SetterLoginTime.setLoginTime(auth);
+        Department department = departmentRepository.findOne(id);
+        if (department == null) {
+            return new ResponseEntity(new CustomErrorType("Department with id " + id
+                    + " not found"), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Department>(department, HttpStatus.OK);
     }
 
+    // -------------------createDepartment-------------------------------------------
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Department createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) throws ParseException {
+    public ResponseEntity<String> createDepartment(@RequestBody DepartmentDTO departmentDTO, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+        SetterLoginTime.setLoginTime(auth);
         Department department = modelMapper.map(departmentDTO, Department.class);
-        return departmentService.createDepartment(department.getName(), department.getCity());
+        departmentService.createDepartment(department.getName(), department.getCity());
+        return new ResponseEntity<String>(HttpStatus.CREATED);
 
     }
 
+    // -------------------UpdateDepartment-------------------------------------------
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    Department UpdateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id) throws ParseException {
+    ResponseEntity<Department> UpdateDepartment(@RequestBody DepartmentDTO departmentDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+        SetterLoginTime.setLoginTime(auth);
         Department department = modelMapper.map(departmentDTO, Department.class);
         department.setId(id);
         departmentService.updateDepartment(department);
-        return department;
+        return new ResponseEntity<Department>(department, HttpStatus.OK);
     }
 
-    @PutMapping("/salaries/{id}")
-    Department setMinSalaryOrMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id) throws ParseException {
-
+    @PutMapping("/salary/{id}")
+    ResponseEntity<Department> setMinSalaryOrMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+        SetterLoginTime.setLoginTime(auth);
         Department department = modelMapper.map(departmentSalariesDTO, Department.class);
         department.setMinSalary(department.getMinSalary());
         department.setMaxSalary(department.getMaxSalary());
         department.setId(id);
         departmentService.updateDepartment(department);
-        return department;
+        return new ResponseEntity<Department>(department, HttpStatus.OK);
 
     }
 
+    // -------------------deleteDepartment-------------------------------------------
     @DeleteMapping("/{id}")
-    void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id) {
+    ResponseEntity deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
+        SetterLoginTime.setLoginTime(auth);
         Department department = departmentRepository.findOne(id);
-        if (department.getNumberOfEmployees() == 0 && department != null) {
+        if (department.getNumberOfEmployees() == 0) {
             departmentRepository.delete(department);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
 
+        return new ResponseEntity(new CustomErrorType("Unable to delete. There are still employees in this department"),
+                HttpStatus.CONFLICT);
     }
-
 }

@@ -5,6 +5,5 @@ import task1.soft.api.util.DTOEntity;
 
 @Data
 public class EmployeeSalaryDTO implements DTOEntity {
-
     private Double salary;
 }
