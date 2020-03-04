@@ -1,16 +1,21 @@
 package task1.soft.api.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import task1.soft.api.dto.DepartmentDTO;
+import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -20,29 +25,25 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
+    private final ModelMapper modelMapper;
 
     public Department createDepartment(String name, String city) {
         Department department = new Department();
         department.setName(name);
         department.setCity(city);
-        setEmployeesData(department);
         departmentRepository.save(department);
         return department;
     }
 
-    @Override
-    public void saveDepartment(Department department) {
-        departmentRepository.save(department);
-    }
 
     @Override
-    public void updateDepartment(Department department) {
+    public Department updateDepartment(Department department) {
 
         department.setId(department.getId());
         department.setName(department.getName());
         department.setCity(department.getCity());
-        setEmployeesData(department);
         departmentRepository.save(department);
+        return department;
     }
 
     @Override
@@ -56,25 +57,50 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void delete(Department department) {
-        departmentRepository.delete(department);
+    public void delete(Department department) { departmentRepository.delete(department);}
+
+    @Override
+    public DepartmentDTO setEmployeesDetails(Long idDepart) {
+        List<User> employees = userRepository.findAllEmployeesOfDepartment(idDepart);
+        Department department = departmentRepository.findOne(idDepart);
+        DepartmentDTO departmentDTO = modelMapper.map(department, DepartmentDTO.class);
+        departmentDTO.setNumberOfEmployees(employees.size());
+
+
+        departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
+        if(departmentDTO.getNumberOfEmployees()==0){
+            departmentDTO.setAverageSalary(new BigDecimal(("0")));
+        }
+        departmentDTO.setMedianSalary(this.calcMedian(idDepart));
+        User head = departmentRepository.findHeadByIdDepart(idDepart);
+        if (head!=null){
+            departmentDTO.setHeadOfDepartment(modelMapper.map(head, EmployeeDTO.class));
+        }
+        return departmentDTO;
+
     }
 
-    private void setEmployeesData(Department department) {
-        List<User> employees = userRepository.findAllEmployeesOfDepartment(department.getId());
-        department.setEmployees(employees);
-//        department.setNumberOfEmployees(department.getEmployees().size());
-//        department.setAverageSalary(department.getEmployees().stream()
-//                .collect(Collectors.averagingDouble(User::getSalary)));
-//        department.setNumberOfEmployees(department.getEmployees().size());
-//        department.setMedianSalary(department.getMedianSalary());
-        //List<Double> doubleList=employees.stream().map(User::getSalary).collect(Collectors.toList());
-////        Double[] array = new Double[department.getEmployees().size()];
-////        doubleList.toArray(array);
-//        departmentRepository.save(department);
-//        new DtoUtils(modelMapper);
-//        return DtoUtils.convertToDto(department, new DepartmentDTO());
-//        department.setMedianSalary(DoubleStream.of().sorted().toArray()[array.length / 2]);
+    private BigDecimal calcMedian(Long idDepart) {
+
+        Department department = departmentRepository.findOne(idDepart);
+
+        List<BigDecimal> salariesList = department.getEmployees().stream().map(User::getSalary).sorted().collect(Collectors.toList());
+        // Calculate median (middle number)
+        BigDecimal median = new BigDecimal("0");
+        double pos1 = Math.floor((salariesList.size() - 1.0) / 2.0);
+        double pos2 = Math.ceil((salariesList.size() - 1.0) / 2.0);
+        if(salariesList.size()==0){
+            return new BigDecimal("0");
+        }
+        if (pos1 == pos2) {
+            median = salariesList.get((int) pos1);
+        } else {
+            median = (salariesList.get((int) pos1)).add(salariesList.get((int) pos2)).divide(new BigDecimal("2"));
+        }
+
+        return median;
+
     }
 
 }
+

@@ -2,24 +2,18 @@ package task1.soft.api.service;
 
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-
-
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {
 
-    public void setupCEO();
-
-    void findAllUsers();
+    void setupCEO();
 
     User findUser(Long id);
 
     List<User> findAllEmployeesOfDepartment(Long idDep);
 
     List<User> findAll();
-
-    void save(User employee);
 
     void updateUser(User employee);
 
@@ -34,4 +28,8 @@ public interface UserService {
     void delete(User employee);
 
     User findByEmail(String email);
+
+    void setLoginTime(Long userId);
+
+    User findHeadByIdDepart(Long id);
 }

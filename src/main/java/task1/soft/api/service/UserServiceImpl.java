@@ -31,6 +31,8 @@ public class UserServiceImpl implements UserService {
 
     private final DepartmentService departmentService;
 
+    private final DepartmentRepository departmentRepository;
+
     @Override
     public void setupCEO() {
         User ceo = new User();
@@ -57,11 +59,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void findAllUsers() {
-        userRepository.findAll();
-    }
-
-    @Override
     public User findUser(Long id) {
         return userRepository.findOne(id);
     }
@@ -75,12 +72,6 @@ public class UserServiceImpl implements UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
-
-    @Override
-    public void save(User employee) {
-        userRepository.save(employee);
-    }
-
 
     public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType, User user) {
         Phone phone = new Phone();
@@ -100,6 +91,10 @@ public class UserServiceImpl implements UserService {
         employee.setActive(true);
         employee.setSalary(salary);
         employee.setPassword(passwordEncoder.encode(password));
+        if (employee.isHead()) {
+            Role userRole = roleRepository.findByName("ROLE_HEAD");
+            employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        }
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         employee.setDateOfEmployment(LocalDate.now());
@@ -135,12 +130,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(User employee) {
+        Department department= employee.getDepartment();
+        department.getEmployees().remove(employee);
         userRepository.delete(employee);
+        departmentRepository.save(department);
     }
 
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public void setLoginTime(Long userId) {
+        userRepository.setLoginTime(userId);
+    }
+
+    @Override
+    public User findHeadByIdDepart(Long id) {
+        return userRepository.findHeadByIdDepart(id);
     }
 
     @Override

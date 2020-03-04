@@ -1,16 +1,14 @@
 package task1.soft.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -21,12 +19,15 @@ import java.time.LocalDateTime;
 @Data
 public class EmployeeDTO {
 
+    @Id
     private Long id;
 
     @NotNull
+    @JsonProperty("first_name")
     private String firstName;
 
     @NotNull
+    @JsonProperty("last_name")
     private String lastName;
 
     @NotNull
@@ -35,24 +36,21 @@ public class EmployeeDTO {
 
     @NotNull
     @Length(min = 6)
-    @JsonIgnore
+    @JsonProperty("password")
     private String password;
 
     @Min(value = 0)
     @NotNull
     private BigDecimal salary;
 
+    @JsonProperty("department_id")
     private Long departmentId;
 
-    private boolean isHead;
 
-    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
-    @Column(name = "last_login_time")
-    private LocalDate dateOfEmployment;
+    @JsonProperty("created_date")
+    private LocalDate dateOfEmployment=LocalDate.now();
 
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
-    @Column(name = "last_login_time")
+    @JsonProperty("last_login_time")
     private LocalDateTime lastLoginTime;
-
 
 }
