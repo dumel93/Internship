@@ -64,7 +64,7 @@ public class User {
     private BigDecimal salary;
 
     @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
-    @Column(name = "created_date")
+    @Column(name = "created_date",columnDefinition = "DATE")
     private LocalDate dateOfEmployment=LocalDate.now();
 
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)

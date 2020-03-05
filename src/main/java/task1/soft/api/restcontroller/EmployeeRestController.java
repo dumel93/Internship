@@ -150,7 +150,7 @@ public class EmployeeRestController {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = userService.findUser(id);
         User head= userService.findHeadByIdDepart(employee.getDepartment().getId());
-        if(head.getId().equals(id) && !head.getDepartment().getId().equals(employee.getDepartment().getId())){
+        if(head==null){
             employee.setHead(true);
             userService.updateUser(employee);
         }
@@ -162,9 +162,6 @@ public class EmployeeRestController {
             userService.updateUser(head);
 
         }
-
-
-
 
     }
 

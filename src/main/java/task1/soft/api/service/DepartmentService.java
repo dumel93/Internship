@@ -12,11 +12,11 @@ public interface DepartmentService {
 
     Department updateDepartment(Department department);
 
-    List<Department> findAll();
-
     Department findOne(Long id);
 
     void delete(Department department);
 
     DepartmentDTO setEmployeesDetails(Long idDepart);
+
+    List<Department> findAll(Integer offset, Integer limit, String sortBy, String orderBy);
 }

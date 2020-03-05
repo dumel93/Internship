@@ -3,9 +3,8 @@ package task1.soft.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
-import task1.soft.api.entity.User;
-
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 
@@ -22,11 +21,18 @@ public class DepartmentDTO {
     @NotEmpty
     private String city;
 
+    @Min(value = 0)
+    @JsonProperty("min_salary")
+    private BigDecimal minSalary;
 
-    private Integer numberOfEmployees;
+    @Min(value = 0)
+    @JsonProperty("max_salary")
+    private BigDecimal maxSalary;
+
     private BigDecimal averageSalary;
     private BigDecimal medianSalary;
+    private Integer numberOfEmployees;
 
     @JsonProperty("head_of_department")
-    private EmployeeDTO headOfDepartment;
+    private EmployeeReadDTO headOfDepartment;
 }

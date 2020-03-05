@@ -1,12 +1,10 @@
 package task1.soft.api.restcontroller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.el.parser.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +27,6 @@ import java.util.stream.Collectors;
 @RequestMapping(produces = "application/json", value = "/departments")
 public class DepartmentRestController {
 
-
     private final DepartmentService departmentService;
     private final ModelMapper modelMapper;
     private final UserService userService;
@@ -38,9 +35,15 @@ public class DepartmentRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth) {
+    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth,
+                                              @RequestParam(defaultValue = "0") Integer offset,
+                                              @RequestParam(defaultValue = "5") Integer limit,
+                                              @RequestParam(defaultValue = "id") String sortBy,
+                                              @RequestParam(defaultValue = "asc") String orderBy
+
+    ){
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        List<Department> departments = departmentService.findAll();
+        List<Department> departments = departmentService.findAll(offset,limit,sortBy,orderBy);
 
         List<DepartmentDTO> departmentDTOS=departments.stream()
                 .map(entity -> modelMapper.map(entity, DepartmentDTO.class))
@@ -89,7 +92,6 @@ public class DepartmentRestController {
         department.setMaxSalary(departmentSalariesDTO.getMaxSalary());
         department.setId(id);
         departmentService.updateDepartment(department);
-
 
     }
 
