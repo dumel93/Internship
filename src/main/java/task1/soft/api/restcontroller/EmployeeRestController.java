@@ -11,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.dto.EmployeePasswordDTO;
 import task1.soft.api.dto.EmployeeSalaryDTO;
@@ -19,7 +18,6 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
-import task1.soft.api.util.CustomErrorType;
 
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
@@ -115,8 +113,7 @@ public class EmployeeRestController {
 
         if (userService.isEmailExist(employee)) {
             log.error("Unable to create. A User with email {} already exist", employee.getEmail());
-            return new ResponseEntity(new CustomErrorType("Unable to create. A User with email " +
-                    employee.getEmail() + " already exist."), HttpStatus.CONFLICT);
+
         }
         Department department = userService.findByEmail(auth.getUsername()).getDepartment();
         department.getEmployees().add(employee);
@@ -190,8 +187,7 @@ public class EmployeeRestController {
         Long departmentId = userService.findByEmail(auth.getUsername()).getDepartment().getId();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentId).contains(employee)) {
             log.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND);
+
         }
         BigDecimal salary = employee.getSalary();
         if (salary.compareTo(employee.getDepartment().getMinSalary()) >= 0 && salary.compareTo(employee.getDepartment().getMaxSalary()) <= 0) {
@@ -199,8 +195,7 @@ public class EmployeeRestController {
             userService.updateUser(employee);
             return new ResponseEntity<User>(employee, HttpStatus.OK);
         } else {
-            return new ResponseEntity(new CustomErrorType("Unable to update.Salaries are on not in range :" +
-                    employee.getDepartment().getMinSalary() + " and" + employee.getDepartment().getMaxSalary()), HttpStatus.CONFLICT);
+            return null;
         }
 
     }
@@ -215,8 +210,7 @@ public class EmployeeRestController {
         Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
             log.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity(new CustomErrorType("Unable to update. User with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND);
+
         }
         employee.setActive(false);
         userService.updateUser(employee);
@@ -231,8 +225,7 @@ public class EmployeeRestController {
         User employee = userService.findUser(id);
         if (employee == null) {
             log.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity(new CustomErrorType("Unable to delete. Employee with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND);
+
         }
         userService.delete(employee);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -246,8 +239,7 @@ public class EmployeeRestController {
         Department departmentOFHead = userService.findByEmail(auth.getUsername()).getDepartment();
         if (employee == null || !userService.findAllEmployeesOfDepartment(departmentOFHead.getId()).contains(employee)) {
             log.error("Unable to update. User with id {} not found.", id);
-            return new ResponseEntity(new CustomErrorType("Unable to delete. Employee with id " + id + " not found."),
-                    HttpStatus.NOT_FOUND);
+
         }
         userService.delete(employee);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

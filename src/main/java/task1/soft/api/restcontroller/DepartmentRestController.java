@@ -42,7 +42,7 @@ public class DepartmentRestController {
                                               @RequestParam(defaultValue = "asc") String orderBy
 
     ) {
-//        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
+        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         List<Department> departments = departmentService.findAll(offset, limit, sortBy, orderBy);
 
         List<DepartmentDTO> departmentDTOS = departments.stream()

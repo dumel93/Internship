@@ -53,9 +53,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Department updateDepartment(Department department) {
 
+
         department.setId(department.getId());
         department.setName(department.getName());
         department.setCity(department.getCity());
+        department.setMinSalary(department.getMinSalary());
+        department.setMaxSalary(department.getMaxSalary());
         departmentRepository.save(department);
         return department;
     }
