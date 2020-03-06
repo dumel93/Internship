@@ -1,7 +1,6 @@
 package task1.soft.api.service;
 
 
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,12 +22,24 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final UserRepository userRepository;
-    private final DepartmentRepository departmentRepository;
-    private final ModelMapper modelMapper;
+    private  UserRepository userRepository;
+    private  DepartmentRepository departmentRepository;
+    private  ModelMapper modelMapper;
+
+    @Autowired
+    public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
+        this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
+        this.modelMapper = modelMapper;
+    }
+
+
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+        this.departmentRepository = departmentRepository;
+    }
+
 
     public Department createDepartment(String name, String city) {
         Department department = new Department();
@@ -55,29 +66,39 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void delete(Department department) {
-        departmentRepository.delete(department);
+    public void delete(Long idDepart) {
+        Department department= departmentRepository.findOne(idDepart);
+        if(department.getEmployees().isEmpty()){
+            departmentRepository.delete(idDepart);
+        }
+
     }
 
     @Override
     public DepartmentDTO setEmployeesDetails(Long idDepart) {
 
         Department department = departmentRepository.findOne(idDepart);
-        DepartmentDTO departmentDTO = modelMapper.map(department, DepartmentDTO.class);
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setId(idDepart);
+        departmentDTO.setCity(department.getCity());
+        departmentDTO.setName(department.getName());
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByDepartId(idDepart));
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
         if (departmentDTO.getNumberOfEmployees() == 0) {
             departmentDTO.setAverageSalary(new BigDecimal(("0")));
         }
-        departmentDTO.setMedianSalary(this.calcMedian(idDepart));
+        BigDecimal medianSalary=calculateMedian(idDepart);
+        departmentDTO.setMedianSalary(medianSalary);
         User head = departmentRepository.findHeadByIdDepart(idDepart);
         if (head != null) {
-            departmentDTO.setHeadOfDepartment(modelMapper.map(head, EmployeeReadDTO.class));
+            EmployeeReadDTO headDTO=modelMapper.map(head, EmployeeReadDTO.class);
+            departmentDTO.setHeadOfDepartment(headDTO);
         }
         return departmentDTO;
 
     }
+
 
     @Override
     public List<Department> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {
@@ -89,6 +110,16 @@ public class DepartmentServiceImpl implements DepartmentService {
         Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
         Pageable pageable = new PageRequest(offset, limit, sort);
         return departmentRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public List<Department> findAll() {
+        return departmentRepository.findAll();
+    }
+
+    @Override
+    public BigDecimal calculateMedian(Long idDepart){
+        return this.calcMedian(idDepart);
     }
 
     private BigDecimal calcMedian(Long idDepart) {

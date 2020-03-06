@@ -9,11 +9,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
-public interface DepartmentRepository extends JpaRepository<Department, Long>, PagingAndSortingRepository<Department, Long> {
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     @Query("select avg(u.salary) from User u inner join u.department d where d.id=u.department.id and u.department.id= ?1")
     BigDecimal countAverageSalaries(Long idDepart);
-
 
     @Query("select u from User u inner join u.department d where d.id=u.department.id and u.department.id= ?1 and u.isHead=true ")
     User findHeadByIdDepart(Long idDepart);
@@ -22,10 +21,10 @@ public interface DepartmentRepository extends JpaRepository<Department, Long>, P
     @Query("select count(u) from User u inner join u.department d where d.id=u.department.id and u.department.id= ?1 ")
     int countEmployeesByDepartId(Long idDepart);
 
-    @Query("select d from Department d where d.city	like ?1%")
-    List<Department> findDepartmentsByCity(String city);
-
-    @Query("select d from Department d where d.name	like ?1%")
-    List<Department> findDepartmentByName(String name);
+//    @Query("select d from Department d where d.city	like ?1%")
+//    List<Department> findDepartmentsByCity(String city);
+//
+//    @Query("select d from Department d where d.name	like ?1%")
+//    List<Department> findDepartmentByName(String name);
 
 }

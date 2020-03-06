@@ -41,15 +41,15 @@ public class DepartmentRestController {
                                               @RequestParam(defaultValue = "id") String sortBy,
                                               @RequestParam(defaultValue = "asc") String orderBy
 
-    ){
-        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        List<Department> departments = departmentService.findAll(offset,limit,sortBy,orderBy);
+    ) {
+//        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
+        List<Department> departments = departmentService.findAll(offset, limit, sortBy, orderBy);
 
-        List<DepartmentDTO> departmentDTOS=departments.stream()
+        List<DepartmentDTO> departmentDTOS = departments.stream()
                 .map(entity -> modelMapper.map(entity, DepartmentDTO.class))
                 .collect(Collectors.toList());
 
-        return departmentDTOS.stream().map(entity->departmentService.setEmployeesDetails(entity.getId())).collect(Collectors.toList());
+        return departmentDTOS.stream().map(entity -> departmentService.setEmployeesDetails(entity.getId())).collect(Collectors.toList());
     }
 
     @Secured("ROLE_HEAD")
@@ -58,8 +58,7 @@ public class DepartmentRestController {
     public DepartmentDTO getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = departmentService.findOne(id);
-        DepartmentDTO departmentDTO=modelMapper.map(department, DepartmentDTO.class);
-        return departmentService.setEmployeesDetails(departmentDTO.getId());
+        return departmentService.setEmployeesDetails(department.getId());
 
     }
 
@@ -82,6 +81,7 @@ public class DepartmentRestController {
         departmentService.updateDepartment(department);
 
     }
+
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/salary/{id}")
@@ -100,11 +100,6 @@ public class DepartmentRestController {
     @DeleteMapping("/{id}")
     void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        Department department = departmentService.findOne(id);
-        if (department.getEmployees().size() == 0) {
-            departmentService.delete(department);
-
-        }
-
+        departmentService.delete(id);
     }
 }

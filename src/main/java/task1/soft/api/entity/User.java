@@ -53,6 +53,7 @@ public class User {
 
 
     @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @JsonIgnore
@@ -64,13 +65,35 @@ public class User {
     private BigDecimal salary;
 
     @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
-    @Column(name = "created_date",columnDefinition = "DATE")
-    private LocalDate dateOfEmployment=LocalDate.now();
+    @Column(name = "created_date", columnDefinition = "DATE")
+    private LocalDate dateOfEmployment = LocalDate.now();
 
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
 
+
+    private boolean sameAsFormer(Department newDepartment) {
+
+        return Objects.equals(department, newDepartment);
+
+    }
+
+    public void setDepartment(Department department) {
+
+        //prevent endless loop
+        if (sameAsFormer(department))
+            return;
+        //set new department
+        Department oldDepartment = this.department;
+        this.department = department;
+        //remove from the old department
+        if (oldDepartment != null)
+            oldDepartment.removeEmployee(this);
+        //set myself into new department
+        if (oldDepartment != null)
+            department.addEmployees(this);
+    }
 
 }
 

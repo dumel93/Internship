@@ -59,7 +59,7 @@
 
             <column name="active" type="boolean"
                     defaultValueBoolean="false"/>
-            <column name="department_department_id" type="BIGINT"/>
+            <column name="department_id" type="BIGINT"/>
 
             <column name="is_head" type="boolean"
                     defaultValueBoolean="false"/>
@@ -100,12 +100,12 @@
         <sql>ALTER TABLE phones ADD CONSTRAINT type CHECK (type = 'BUSINESS' OR type = 'PRIVATE')</sql>
 
 
-        <addForeignKeyConstraint baseColumnNames="department_department_id"
+        <addForeignKeyConstraint baseColumnNames="department_id"
                                  baseTableName="users"
 
                                  constraintName="fk_user_department_id"
 
-                                 onDelete="CASCADE"
+                                 onDelete="CASCADE" 
                                  onUpdate="RESTRICT"
 
                                  referencedColumnNames="department_id"
