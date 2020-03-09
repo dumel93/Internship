@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -87,12 +86,14 @@ public class User {
         //set new department
         Department oldDepartment = this.department;
         this.department = department;
+
         //remove from the old department
         if (oldDepartment != null)
             oldDepartment.removeEmployee(this);
         //set myself into new department
-        if (oldDepartment != null)
+        if (oldDepartment != null && this.department!=null)
             department.addEmployees(this);
+
     }
 
 }

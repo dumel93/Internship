@@ -27,7 +27,7 @@ public class Department {
     @NotNull
     private String city;
 
-    @OneToMany(mappedBy = "department",cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "department", cascade = {CascadeType.ALL})
     private List<User> employees = new ArrayList<>();
 
     @Column
@@ -37,7 +37,6 @@ public class Department {
     @Column
     @Min(value = 0)
     private BigDecimal maxSalary;
-
 
 
     /**
@@ -74,9 +73,9 @@ public class Department {
         //prevent endless loop
         if (!employees.contains(employee))
             return;
-        //remove the account
+        //remove the employee
         employees.remove(employee);
-        //remove myself from the twitter account
+        //remove myself from the employee
         employee.setDepartment(null);
 
     }

@@ -1,13 +1,10 @@
 package task1.soft.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -53,4 +50,13 @@ public class EmployeeDTO {
     @JsonProperty("last_login_time")
     private LocalDateTime lastLoginTime;
 
+    public EmployeeDTO(String firstName, String lastName, String email, String password, BigDecimal salary, Long departmentId) {
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.salary = salary;
+        this.departmentId = departmentId;
+    }
 }

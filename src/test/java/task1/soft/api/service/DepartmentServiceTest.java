@@ -1,6 +1,5 @@
 package task1.soft.api.service;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
 
 
 //BDD
@@ -38,8 +37,6 @@ public class DepartmentServiceTest {
 
     @InjectMocks
     private DepartmentService departmentService = new DepartmentServiceImpl(userRepository, departmentRepository, modelMapper);
-
-
 
     @Test
     public void createDepartmentTest() {

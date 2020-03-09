@@ -3,6 +3,9 @@ package task1.soft.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import task1.soft.api.entity.*;
@@ -10,6 +13,15 @@ import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
+import task1.soft.api.util.DepartmentSearchQueryCriteriaConsumer;
+import task1.soft.api.util.SearchCriteria;
+import task1.soft.api.util.UserSearchQueryCriteriaConsumer;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,6 +44,8 @@ public class UserServiceImpl implements UserService {
     private final DepartmentService departmentService;
 
     private final DepartmentRepository departmentRepository;
+
+    private final EntityManager entityManager;
 
     @Override
     public void setupCEO() {
@@ -131,9 +145,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User employee) {
         Department department= employee.getDepartment();
-        department.getEmployees().remove(employee);
+        department.removeEmployee(employee);
         userRepository.delete(employee);
-        departmentRepository.save(department);
+
     }
 
     @Override
@@ -149,6 +163,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findHeadByIdDepart(Long id) {
         return userRepository.findHeadByIdDepart(id);
+    }
+
+    @Override
+    public List<User> searchEmployee(List<SearchCriteria> params) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root r = query.from(User.class);
+        Predicate predicate = builder.conjunction();
+
+        UserSearchQueryCriteriaConsumer searchConsumer =
+                new UserSearchQueryCriteriaConsumer(predicate, builder, r);
+        params.stream().forEach(searchConsumer);
+        predicate = searchConsumer.getPredicate();
+        query.where(predicate);
+
+        List<User> result = entityManager.createQuery(query).getResultList();
+        return result;
+    }
+
+    @Override
+    public List<User> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {
+        if (orderBy.toUpperCase().equals("DESC")) {
+            Sort sortdesc = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
+            Pageable pageable = new PageRequest(offset, limit, sortdesc);
+            return userRepository.findAll(pageable).getContent();
+        }
+        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
+        Pageable pageable = new PageRequest(offset, limit, sort);
+        return userRepository.findAll(pageable).getContent();
     }
 
     @Override

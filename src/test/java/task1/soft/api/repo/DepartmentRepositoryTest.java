@@ -5,51 +5,33 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-
 import java.math.BigDecimal;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@DataJpaTest
+@Sql("/data_schema.sql")
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class DepartmentRepositoryTest {
 
     @Autowired
-    private  TestEntityManager entityManager;
+    private TestEntityManager entityManager;
     @Autowired
-    private  DepartmentRepository departmentRepository;
+    private DepartmentRepository departmentRepository;
 
     @Test
     public void countAverageSalariesTest() {
-        Department department = new Department();
-        department.setName("it");
-        department.setCity("rzeszow");
 
-        User user = new User();
-        user.setFirstName("d");
-        user.setLastName("k");
-        user.setEmail("i@wp.pl");
-        user.setSalary(new BigDecimal("1000"));
-        user.setDepartment(department);
-
-        User user2 = new User();
-        user2.setFirstName("d2");
-        user2.setLastName("k2");
-        user2.setEmail("i2@wp.pl");
-        user2.setSalary(new BigDecimal("2000"));
-        user2.setDepartment(department);
-
-
-        entityManager.persist(department);
-        entityManager.persist(user);
-        entityManager.persist(user2);
-        Assert.assertEquals(new BigDecimal("1500.0"), departmentRepository.countAverageSalaries(department.getId()));
+        Assert.assertEquals(new BigDecimal("2500.0"), departmentRepository.countAverageSalaries(1L));
     }
 
 
@@ -83,30 +65,9 @@ public class DepartmentRepositoryTest {
 
     @Test
     public void countEmployeesByDepartIdTest() {
-        Department department3 = new Department();
-        department3.setName("it");
-        department3.setCity("rzeszow");
 
-        User user5 = new User();
-        user5.setFirstName("d");
-        user5.setLastName("k");
-        user5.setEmail("i5@wp.pl");
-        user5.setSalary(new BigDecimal("1000"));
-        user5.setDepartment(department3);
+        Assert.assertEquals(2, departmentRepository.countEmployeesByDepartId(1L));
 
-        User user6 = new User();
-        user6.setFirstName("d2");
-        user6.setLastName("k2");
-        user6.setEmail("i6@wp.pl");
-        user6.setSalary(new BigDecimal("2000"));
-        user6.setDepartment(department3);
-
-
-        entityManager.persist(department3);
-        entityManager.persist(user5);
-        entityManager.persist(user6);
-        Assert.assertEquals(2, departmentRepository.countEmployeesByDepartId(department3.getId()));
     }
-
 
 }

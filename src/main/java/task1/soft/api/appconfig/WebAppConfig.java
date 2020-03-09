@@ -18,9 +18,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
         registry.addMapping("/**")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedOrigins("http://localhost");
-
     }
-
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -30,7 +28,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

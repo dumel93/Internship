@@ -3,8 +3,6 @@ package task1.soft.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
-
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

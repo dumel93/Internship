@@ -16,4 +16,12 @@ public class DepartmentSalariesDTO {
     @Min(value = 0)
     @JsonProperty("max_salary")
     private BigDecimal maxSalary;
+
+    public DepartmentSalariesDTO(BigDecimal minSalary, BigDecimal maxSalary) {
+        this.minSalary = minSalary;
+        this.maxSalary = maxSalary;
+    }
+
+    public DepartmentSalariesDTO() {
+    }
 }

@@ -2,6 +2,8 @@ package task1.soft.api.service;
 
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+import task1.soft.api.util.SearchCriteria;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -32,4 +34,8 @@ public interface UserService {
     void setLoginTime(Long userId);
 
     User findHeadByIdDepart(Long id);
+
+    List<User> searchEmployee(List<SearchCriteria> params);
+
+    List<User> findAll(Integer offset, Integer limit, String sortBy, String orderBy);
 }

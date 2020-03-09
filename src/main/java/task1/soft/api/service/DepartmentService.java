@@ -2,6 +2,7 @@ package task1.soft.api.service;
 
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.entity.Department;
+import task1.soft.api.util.SearchCriteria;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,4 +25,8 @@ public interface DepartmentService {
     List<Department> findAll();
 
     BigDecimal calculateMedian(Long idDepart);
+
+    List<Department> searchDepartment(List<SearchCriteria> params);
+
+
 }

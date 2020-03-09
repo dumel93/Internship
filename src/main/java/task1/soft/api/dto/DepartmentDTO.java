@@ -35,4 +35,12 @@ public class DepartmentDTO {
 
     @JsonProperty("head_of_department")
     private EmployeeReadDTO headOfDepartment;
+
+    public DepartmentDTO(String name, String city) {
+        this.name = name;
+        this.city = city;
+    }
+
+    public DepartmentDTO() {
+    }
 }

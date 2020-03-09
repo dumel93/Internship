@@ -2,11 +2,10 @@ package task1.soft.api.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+
 import java.math.BigDecimal;
-import java.util.List;
 
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
@@ -17,14 +16,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("select u from User u inner join u.department d where d.id=u.department.id and u.department.id= ?1 and u.isHead=true ")
     User findHeadByIdDepart(Long idDepart);
 
-
     @Query("select count(u) from User u inner join u.department d where d.id=u.department.id and u.department.id= ?1 ")
     int countEmployeesByDepartId(Long idDepart);
-
-//    @Query("select d from Department d where d.city	like ?1%")
-//    List<Department> findDepartmentsByCity(String city);
-//
-//    @Query("select d from Department d where d.name	like ?1%")
-//    List<Department> findDepartmentByName(String name);
 
 }

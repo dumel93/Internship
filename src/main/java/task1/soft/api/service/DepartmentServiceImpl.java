@@ -13,7 +13,15 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.UserRepository;
+import task1.soft.api.util.DepartmentSearchQueryCriteriaConsumer;
+import task1.soft.api.util.SearchCriteria;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,6 +35,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     private  UserRepository userRepository;
     private  DepartmentRepository departmentRepository;
     private  ModelMapper modelMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
@@ -85,6 +96,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentDTO.setId(idDepart);
         departmentDTO.setCity(department.getCity());
         departmentDTO.setName(department.getName());
+        departmentDTO.setMinSalary(department.getMinSalary());
+        departmentDTO.setMaxSalary(department.getMaxSalary());
+
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByDepartId(idDepart));
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
@@ -124,6 +138,26 @@ public class DepartmentServiceImpl implements DepartmentService {
     public BigDecimal calculateMedian(Long idDepart){
         return this.calcMedian(idDepart);
     }
+
+    @Override
+    public List<Department> searchDepartment(List<SearchCriteria> params) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Department> query = builder.createQuery(Department.class);
+        Root r = query.from(Department.class);
+
+        Predicate predicate = builder.conjunction();
+
+        DepartmentSearchQueryCriteriaConsumer searchConsumer =
+                new DepartmentSearchQueryCriteriaConsumer(predicate, builder, r);
+        params.stream().forEach(searchConsumer);
+        predicate = searchConsumer.getPredicate();
+        query.where(predicate);
+
+        List<Department> result = entityManager.createQuery(query).getResultList();
+        return result;
+    }
+
+
 
     private BigDecimal calcMedian(Long idDepart) {
 
