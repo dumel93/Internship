@@ -39,6 +39,8 @@ public class Department {
     private BigDecimal maxSalary;
 
 
+
+
     /**
      * Add new employee to the department. The method keeps
      * relationships consistency:
@@ -47,21 +49,15 @@ public class Department {
     public void addEmployees(User employee) {
 
         //prevent endless loop
-        if (employees.contains(employee))
+        if (employees.contains(employee)){
             return;
+        }
         //add new employee
         employees.add(employee);
         //set myself into the employee account
         employee.setDepartment(this);
 
     }
-
-    //defensive copy, nobody will be able to change
-    //the list from the outside
-    public List<User> getEmployees() {
-        return employees;
-    }
-
 
     /**
      * Removes the employee from the department. The method keeps
@@ -71,8 +67,9 @@ public class Department {
     public void removeEmployee(User employee) {
 
         //prevent endless loop
-        if (!employees.contains(employee))
+        if (!employees.contains(employee)){
             return;
+        }
         //remove the employee
         employees.remove(employee);
         //remove myself from the employee

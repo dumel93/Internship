@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Data
 public class EmployeeDTO {
 
-    @Id
     private Long id;
 
     @NotNull
@@ -50,13 +49,4 @@ public class EmployeeDTO {
     @JsonProperty("last_login_time")
     private LocalDateTime lastLoginTime;
 
-    public EmployeeDTO(String firstName, String lastName, String email, String password, BigDecimal salary, Long departmentId) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.salary = salary;
-        this.departmentId = departmentId;
-    }
 }

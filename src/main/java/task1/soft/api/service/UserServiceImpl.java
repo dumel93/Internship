@@ -2,20 +2,15 @@ package task1.soft.api.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import task1.soft.api.entity.*;
-import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
-import task1.soft.api.util.DepartmentSearchQueryCriteriaConsumer;
-import task1.soft.api.util.SearchCriteria;
-import task1.soft.api.util.UserSearchQueryCriteriaConsumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,7 +25,7 @@ import java.util.*;
 
 @Service
 @Transactional
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
@@ -42,8 +37,6 @@ public class UserServiceImpl implements UserService {
     private final PhoneRepository phoneRepository;
 
     private final DepartmentService departmentService;
-
-    private final DepartmentRepository departmentRepository;
 
     private final EntityManager entityManager;
 
@@ -87,13 +80,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    public Set<Phone> createPhones(Set<Phone> phones, String number, PhoneType phoneType, User user) {
+    public void createPhones(Set<Phone> phones, String number, PhoneType phoneType, User user) {
         Phone phone = new Phone();
         phone.setNumber(number);
         phone.setType(phoneType);
         phone.setUser(user);
         phones.add(phone);
-        return phones;
     }
 
     @Override
@@ -160,27 +152,7 @@ public class UserServiceImpl implements UserService {
         userRepository.setLoginTime(userId);
     }
 
-    @Override
-    public User findHeadByIdDepart(Long id) {
-        return userRepository.findHeadByIdDepart(id);
-    }
 
-    @Override
-    public List<User> searchEmployee(List<SearchCriteria> params) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root r = query.from(User.class);
-        Predicate predicate = builder.conjunction();
-
-        UserSearchQueryCriteriaConsumer searchConsumer =
-                new UserSearchQueryCriteriaConsumer(predicate, builder, r);
-        params.stream().forEach(searchConsumer);
-        predicate = searchConsumer.getPredicate();
-        query.where(predicate);
-
-        List<User> result = entityManager.createQuery(query).getResultList();
-        return result;
-    }
 
     @Override
     public List<User> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {

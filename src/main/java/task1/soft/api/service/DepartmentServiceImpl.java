@@ -1,8 +1,7 @@
 package task1.soft.api.service;
 
-
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,16 +11,6 @@ import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.repo.DepartmentRepository;
-import task1.soft.api.repo.UserRepository;
-import task1.soft.api.util.DepartmentSearchQueryCriteriaConsumer;
-import task1.soft.api.util.SearchCriteria;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,27 +19,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private  UserRepository userRepository;
-    private  DepartmentRepository departmentRepository;
-    private  ModelMapper modelMapper;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Autowired
-    public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.departmentRepository = departmentRepository;
-        this.modelMapper = modelMapper;
-    }
-
-
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
-        this.departmentRepository = departmentRepository;
-    }
-
+    private DepartmentRepository departmentRepository;
+    private ModelMapper modelMapper;
 
     public Department createDepartment(String name, String city) {
         Department department = new Department();
@@ -63,7 +36,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department updateDepartment(Department department) {
-
 
         department.setId(department.getId());
         department.setName(department.getName());
@@ -81,41 +53,36 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void delete(Long idDepart) {
-        Department department= departmentRepository.findOne(idDepart);
-        if(department.getEmployees().isEmpty()){
+        Department department = departmentRepository.findOne(idDepart);
+        if (department.getEmployees().isEmpty()) {
             departmentRepository.delete(idDepart);
         }
-
     }
 
     @Override
-    public DepartmentDTO setEmployeesDetails(Long idDepart) {
-
+    public DepartmentDTO getAllDepartmentDetails(Long idDepart) {
         Department department = departmentRepository.findOne(idDepart);
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setId(idDepart);
-        departmentDTO.setCity(department.getCity());
         departmentDTO.setName(department.getName());
-        departmentDTO.setMinSalary(department.getMinSalary());
+        departmentDTO.setCity(department.getCity());
         departmentDTO.setMaxSalary(department.getMaxSalary());
-
+        departmentDTO.setMinSalary(department.getMinSalary());
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByDepartId(idDepart));
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
         if (departmentDTO.getNumberOfEmployees() == 0) {
             departmentDTO.setAverageSalary(new BigDecimal(("0")));
         }
-        BigDecimal medianSalary=calculateMedian(idDepart);
+        BigDecimal medianSalary = calculateMedian(idDepart);
         departmentDTO.setMedianSalary(medianSalary);
         User head = departmentRepository.findHeadByIdDepart(idDepart);
         if (head != null) {
-            EmployeeReadDTO headDTO=modelMapper.map(head, EmployeeReadDTO.class);
+            EmployeeReadDTO headDTO = modelMapper.map(head, EmployeeReadDTO.class);
             departmentDTO.setHeadOfDepartment(headDTO);
         }
         return departmentDTO;
-
     }
-
 
     @Override
     public List<Department> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {
@@ -135,28 +102,15 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public BigDecimal calculateMedian(Long idDepart){
+    public BigDecimal calculateMedian(Long idDepart) {
         return this.calcMedian(idDepart);
     }
 
+
     @Override
-    public List<Department> searchDepartment(List<SearchCriteria> params) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Department> query = builder.createQuery(Department.class);
-        Root r = query.from(Department.class);
-
-        Predicate predicate = builder.conjunction();
-
-        DepartmentSearchQueryCriteriaConsumer searchConsumer =
-                new DepartmentSearchQueryCriteriaConsumer(predicate, builder, r);
-        params.stream().forEach(searchConsumer);
-        predicate = searchConsumer.getPredicate();
-        query.where(predicate);
-
-        List<Department> result = entityManager.createQuery(query).getResultList();
-        return result;
+    public User findHeadByIdDepart(Long idDepart) {
+        return departmentRepository.findHeadByIdDepart(idDepart);
     }
-
 
 
     private BigDecimal calcMedian(Long idDepart) {
@@ -178,5 +132,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return median;
     }
+
+
+
 }
 

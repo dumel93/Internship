@@ -2,7 +2,7 @@ package task1.soft.api.service;
 
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.entity.Department;
-import task1.soft.api.util.SearchCriteria;
+import task1.soft.api.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +18,7 @@ public interface DepartmentService {
 
     void delete(Long idDepart);
 
-    DepartmentDTO setEmployeesDetails(Long idDepart);
+    DepartmentDTO getAllDepartmentDetails(Long idDepart);
 
     List<Department> findAll(Integer offset, Integer limit, String sortBy, String orderBy);
 
@@ -26,7 +26,7 @@ public interface DepartmentService {
 
     BigDecimal calculateMedian(Long idDepart);
 
-    List<Department> searchDepartment(List<SearchCriteria> params);
+    User findHeadByIdDepart(Long idDepart);
 
 
 }

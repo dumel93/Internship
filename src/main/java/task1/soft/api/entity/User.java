@@ -74,7 +74,7 @@ public class User {
 
     private boolean sameAsFormer(Department newDepartment) {
 
-        return Objects.equals(department, newDepartment);
+        return department==null? newDepartment == null : department.equals(newDepartment);
 
     }
 

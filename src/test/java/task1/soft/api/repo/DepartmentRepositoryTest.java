@@ -14,17 +14,19 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+
 import java.math.BigDecimal;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DataJpaTest
-@Sql("/data_schema.sql")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@Sql(scripts = { "/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class DepartmentRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;
+
     @Autowired
     private DepartmentRepository departmentRepository;
 
@@ -66,7 +68,9 @@ public class DepartmentRepositoryTest {
     @Test
     public void countEmployeesByDepartIdTest() {
 
+
         Assert.assertEquals(2, departmentRepository.countEmployeesByDepartId(1L));
+        Assert.assertEquals(0, departmentRepository.countEmployeesByDepartId(2L));
 
     }
 

@@ -3,11 +3,8 @@ package task1.soft.api.restcontroller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -18,12 +15,9 @@ import task1.soft.api.dto.EmployeePasswordDTO;
 import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.dto.EmployeeSalaryDTO;
 import task1.soft.api.entity.Department;
-import task1.soft.api.entity.Role;
 import task1.soft.api.entity.User;
-import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
-import task1.soft.api.util.SearchCriteria;
 
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
@@ -36,7 +30,7 @@ import java.util.stream.Collectors;
 @Validated
 @RestController
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @RequestMapping(value = "/employees", produces = "application/json")
 public class EmployeeRestController {
 
@@ -44,7 +38,6 @@ public class EmployeeRestController {
     private final UserService userService;
     private final DepartmentService departmentService;
     private final ModelMapper modelMapper;
-    private final RoleRepository roleRepository;
 
     // -------------------Get an Employee/s-------------------------------------------
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
@@ -59,17 +52,6 @@ public class EmployeeRestController {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         List<User> employees;
         employees = userService.findAll(offset, limit, sortBy, orderBy);
-        List<SearchCriteria> params = new ArrayList<>();
-        if (search != null) {
-            Pattern pattern = Pattern.compile("(\\w+?)([:<>])(\\w+?),");
-            Matcher matcher = pattern.matcher(search + ",");
-            while (matcher.find()) {
-                params.add(new SearchCriteria(matcher.group(1),
-                        matcher.group(2), matcher.group(3)));
-            }
-
-            employees = userService.searchEmployee(params);
-        }
 
         return employees.stream()
                 .map(entity -> modelMapper.map(entity, EmployeeReadDTO.class))
@@ -170,7 +152,7 @@ public class EmployeeRestController {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = userService.findUser(id);
-        User head = userService.findHeadByIdDepart(employee.getDepartment().getId());
+        User head = departmentService.findHeadByIdDepart(employee.getDepartment().getId());
         if (head == null) {
             employee.setHead(true);
             userService.updateUser(employee);

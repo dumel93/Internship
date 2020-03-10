@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Data
 public class EmployeeReadDTO {
 
-    @Id
     private Long id;
 
     @NotNull
@@ -38,7 +37,7 @@ public class EmployeeReadDTO {
 
 
     @JsonProperty("created_date")
-    private LocalDate dateOfEmployment=LocalDate.now();
+    private LocalDate dateOfEmployment;
 
     @JsonProperty("last_login_time")
     private LocalDateTime lastLoginTime;
