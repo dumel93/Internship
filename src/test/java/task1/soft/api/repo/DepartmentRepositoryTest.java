@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@Sql(scripts = { "/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/populate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class DepartmentRepositoryTest {
 
     @Autowired

@@ -36,6 +36,9 @@ public class DepartmentRestController {
     @GetMapping
     public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth,
                                               @RequestParam(value = "search", required = false) String search,
+                                              @RequestParam(defaultValue = "0") Integer id,
+                                              @RequestParam String name,
+                                              @RequestParam String city,
                                               @RequestParam(defaultValue = "0") Integer offset,
                                               @RequestParam(defaultValue = "5") Integer limit,
                                               @RequestParam(defaultValue = "id") String sortBy,
