@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @Data
 public class DepartmentDTO {
 
-
     private Long id;
 
     @NotEmpty
@@ -29,8 +28,10 @@ public class DepartmentDTO {
 
     @JsonProperty("average_salary")
     private BigDecimal averageSalary;
+
     @JsonProperty("median_salary")
     private BigDecimal medianSalary;
+
     @JsonProperty("number_of_employees")
     private Integer numberOfEmployees;
 

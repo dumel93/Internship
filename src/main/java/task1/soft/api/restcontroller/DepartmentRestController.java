@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
 import task1.soft.api.entity.Department;
+import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
+import task1.soft.api.exception.NotFoundException;
 
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -34,20 +36,12 @@ public class DepartmentRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth,
-                                              @RequestParam(value = "search", required = false) String search,
-                                              @RequestParam(defaultValue = "0") Integer id,
-                                              @RequestParam String name,
-                                              @RequestParam String city,
-                                              @RequestParam(defaultValue = "0") Integer offset,
-                                              @RequestParam(defaultValue = "5") Integer limit,
-                                              @RequestParam(defaultValue = "id") String sortBy,
-                                              @RequestParam(defaultValue = "asc") String orderBy
+    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth
 
     ) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         List<Department> departments;
-        departments = departmentService.findAll(offset, limit, sortBy, orderBy);
+        departments = departmentService.findAll();
 
         return departments.stream()
                 .map(entity -> modelMapper.map(entity, DepartmentDTO.class))
@@ -61,7 +55,7 @@ public class DepartmentRestController {
     @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public DepartmentDTO getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) {
+    public DepartmentDTO getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = departmentService.findOne(id);
         return departmentService.getAllDepartmentDetails(department.getId());
@@ -93,7 +87,7 @@ public class DepartmentRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/salary")
-    public DepartmentDTO setMinSalaryAndMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+    public DepartmentDTO setMinSalaryAndMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException, NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = departmentService.findOne(id);
         department.setMinSalary(departmentSalariesDTO.getMinSalary());
@@ -107,7 +101,7 @@ public class DepartmentRestController {
     // -------------------deleteDepartment-------------------------------------------
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) {
+    void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) throws NoDeletePermissionException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         departmentService.delete(id);
     }

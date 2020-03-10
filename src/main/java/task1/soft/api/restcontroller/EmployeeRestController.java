@@ -18,13 +18,11 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
+import task1.soft.api.exception.NotFoundException;
 
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Validated
@@ -97,7 +95,7 @@ public class EmployeeRestController {
     @Secured("ROLE_CEO")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/")
-    public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) {
+    public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) throws NotFoundException {
         User employee = modelMapper.map(employeeDTO, User.class);
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         log.info("Creating User : {}", employee);

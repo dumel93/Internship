@@ -1,14 +1,13 @@
 package task1.soft.api;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import task1.soft.api.service.UserService;
 
 
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Component
 public class DataLoader {
 
@@ -17,7 +16,7 @@ public class DataLoader {
     @EventListener(ApplicationReadyEvent.class)
     public void setUpDB() {
 
-        if (userService.findAll().size() == 0) {
+        if (userService.findAll().isEmpty()) {
             userService.createRoles();
             userService.setupCEO();
 

@@ -10,10 +10,15 @@ import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.repo.DepartmentRepository;
+import task1.soft.api.exception.NotFoundException;
+
+import javax.naming.NoPermissionException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -38,6 +43,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department updateDepartment(Department department) {
 
         department.setId(department.getId());
+        department.setEmployees(department.getEmployees());
         department.setName(department.getName());
         department.setCity(department.getCity());
         department.setMinSalary(department.getMinSalary());
@@ -47,21 +53,26 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department findOne(Long id) {
-        return departmentRepository.findOne(id);
+    public Department findOne(Long idDepart) throws NotFoundException {
+
+        Optional<Department> department = Optional.ofNullable(departmentRepository.findOne(idDepart));
+        return department.orElseThrow(() -> new NotFoundException("There is no Department with id: " + idDepart));
     }
 
     @Override
-    public void delete(Long idDepart) {
-        Department department = departmentRepository.findOne(idDepart);
+    public void delete(Long idDepart) throws NoDeletePermissionException {
+        Department department = findOne(idDepart);
         if (department.getEmployees().isEmpty()) {
             departmentRepository.delete(idDepart);
+        } else {
+            throw new NoDeletePermissionException("Cannot delete this department because there are still employees");
         }
+
     }
 
     @Override
     public DepartmentDTO getAllDepartmentDetails(Long idDepart) {
-        Department department = departmentRepository.findOne(idDepart);
+        Department department = this.findOne(idDepart);
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setId(idDepart);
         departmentDTO.setName(department.getName());
@@ -85,18 +96,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<Department> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {
-        if (orderBy.toUpperCase().equals("DESC")) {
-            Sort sortdesc = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
-            Pageable pageable = new PageRequest(offset, limit, sortdesc);
-            return departmentRepository.findAll(pageable).getContent();
-        }
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
-        Pageable pageable = new PageRequest(offset, limit, sort);
-        return departmentRepository.findAll(pageable).getContent();
-    }
-
-    @Override
     public List<Department> findAll() {
         return departmentRepository.findAll();
     }
@@ -115,7 +114,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private BigDecimal calcMedian(Long idDepart) {
 
-        Department department = departmentRepository.findOne(idDepart);
+        Department department = this.findOne(idDepart);
         List<BigDecimal> salariesList = department.getEmployees().stream().map(User::getSalary).sorted().collect(Collectors.toList());
         // Calculate median (middle number)
         BigDecimal median;
@@ -132,7 +131,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return median;
     }
-
 
 
 }
