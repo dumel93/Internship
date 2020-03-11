@@ -42,10 +42,9 @@ public class DepartmentRestController {
         departments = departmentService.findAll();
         return departments.stream()
                 .map(department -> modelMapper.map(department, DepartmentDTO.class))
-                .collect(Collectors.toList())
-                .stream()
                 .map(department -> departmentService.getAllDepartmentDetails(department.getId()))
                 .collect(Collectors.toList());
+
     }
 
 
@@ -64,8 +63,8 @@ public class DepartmentRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public DepartmentDTO createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @AuthenticationPrincipal UserDetails auth)  {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        Department department = modelMapper.map(departmentDTO, Department.class);
-        Department departmentCreated = departmentService.createDepartment(department.getName(), department.getCity());
+        Department departmentCreated = departmentService.createDepartment(departmentDTO);
+        departmentDTO.setId(departmentCreated.getId());
         return departmentService.getAllDepartmentDetails(departmentCreated.getId());
     }
 

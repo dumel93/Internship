@@ -14,14 +14,14 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-
 import java.math.BigDecimal;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@Sql(scripts = {"/populate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts =
+        {"classpath:cleanup.sql", "classpath:populate.sql"})
 public class DepartmentRepositoryTest {
 
     @Autowired
@@ -57,7 +57,6 @@ public class DepartmentRepositoryTest {
         user4.setHead(true);
         user4.setSalary(new BigDecimal("2000"));
         user4.setDepartment(department2);
-
 
         entityManager.persist(department2);
         entityManager.persist(user3);

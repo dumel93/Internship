@@ -40,13 +40,17 @@ public class DepartmentServiceTest {
     @Test
     public void createDepartmentTest() {
         //	given
-        Department department = new Department();
-        department.setName("it");
-        department.setCity("rzeszow");
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setName("it");
+        departmentDTO.setCity("rzeszow");
+
+        Department department= new Department();
+        department.setName(departmentDTO.getName());
+        department.setCity(departmentDTO.getCity());
 
         when(departmentRepository.save(department)).thenReturn(department);
         // 	when
-        Department result = departmentService.createDepartment("it", "rzeszow");
+        Department result = departmentService.createDepartment(departmentDTO);
         // 	then
         assertEquals(department.getName(), result.getName());
 

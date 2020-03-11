@@ -26,20 +26,21 @@ public class DepartmentServiceImpl implements DepartmentService {
     private DepartmentRepository departmentRepository;
     private ModelMapper modelMapper;
 
-    public Department createDepartment(String name, String city) {
+    public Department createDepartment(DepartmentDTO departmentDTO) {
         Department department = new Department();
-        department.setName(name);
-        department.setCity(city);
+        department.setName(departmentDTO.getName());
+        department.setCity(departmentDTO.getCity());
+        department.setMinSalary(departmentDTO.getMinSalary());
+        department.setMaxSalary(departmentDTO.getMaxSalary());
         departmentRepository.save(department);
         return department;
     }
 
-
     @Override
     public Department updateDepartment(Department department) {
 
+
         department.setId(department.getId());
-        department.setEmployees(department.getEmployees());
         department.setName(department.getName());
         department.setCity(department.getCity());
         department.setMinSalary(department.getMinSalary());
@@ -78,7 +79,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByDepartId(idDepart));
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
-        if (departmentDTO.getNumberOfEmployees() == 0) {
+        if (departmentDTO.getNumberOfEmployees()==0) {
             departmentDTO.setAverageSalary(BigDecimal.valueOf(0));
         }
         BigDecimal medianSalary = calculateMedian(idDepart);
@@ -146,7 +147,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         //remove myself from the employee
         employee.setDepartment(null);
     }
-
 
     private BigDecimal calcMedian(Long idDepart) {
 

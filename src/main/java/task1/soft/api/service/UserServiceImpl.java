@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.entity.*;
+import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.exception.UserExistsException;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
         ceo.setActive(true);
         ceo.setPassword(passwordEncoder.encode("admin123"));
         Role userRole = roleRepository.findByName("ROLE_CEO");
-        ceo.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        ceo.setRoles(new HashSet<>(Collections.singletonList(userRole)));
 
         Set<Phone> phones = new HashSet<>();
         Phone phone = new Phone();
@@ -62,16 +64,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUser(Long id) {
-        return userRepository.findOne(id);
+
+        Optional<User> employee = Optional.ofNullable(userRepository.findOne(id));
+        return employee.orElseThrow(() -> new NotFoundException("There is no employee with id: " + id));
     }
 
     @Override
     public List<User> findAllEmployeesOfDepartment(Long idDep) {
-        return userRepository.findAllEmployeesOfDepartment(idDep);
+
+        Department department= departmentService.findOne(idDep);
+        Optional<List<User>> employees = Optional.ofNullable(userRepository.findAllEmployeesOfDepartment(department.getId()));
+        return employees.orElseThrow(() -> new NotFoundException("There is no employees in this department: " + department.getId()));
     }
 
     @Override
     public List<User> findAll() {
+
         return userRepository.findAll();
     }
 
@@ -84,14 +92,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createEmployee(String firstName, String lastName, String email, String password, BigDecimal salary, Department department) {
+    public void createEmployee(EmployeeDTO employeeDTO) {
         User employee = new User();
-        employee.setFirstName(firstName);
-        employee.setLastName(lastName);
-        employee.setEmail(email);
+        employee.setFirstName(employeeDTO.getFirstName());
+        employee.setLastName(employeeDTO.getFirstName());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setHead(employeeDTO.isHead());
         employee.setActive(true);
-        employee.setSalary(salary);
-        employee.setPassword(passwordEncoder.encode(password));
+        employee.setSalary(employeeDTO.getSalary());
+        employee.setPassword(passwordEncoder.encode(employeeDTO.getPassword()));
         if (employee.isHead()) {
             Role userRole = roleRepository.findByName("ROLE_HEAD");
             employee.setRoles(new HashSet<>(Collections.singletonList(userRole)));
@@ -99,13 +108,14 @@ public class UserServiceImpl implements UserService {
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
         employee.setRoles(new HashSet<>(Collections.singletonList(userRole)));
         employee.setDateOfEmployment(LocalDate.now());
+        Department department= departmentService.findOne(employeeDTO.getDepartmentId());
         employee.setDepartment(department);
 
         Set<Phone> phones = new HashSet<>();
         phoneRepository.save(phones);
         userRepository.save(employee);
 
-        department.getEmployees().add(employee);
+        departmentService.addEmployee(department.getId(),employee);
         departmentService.updateDepartment(department);
     }
 
@@ -116,17 +126,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-
-    @Override
-    public boolean isEmailExist(User employee) throws UserExistsException {
-        List<User> users = userRepository.findAll();
-        for (User user : users) {
-            if (user.getEmail().equals(employee.getEmail())) {
-                throw new UserExistsException("Unable to create. A User with email {} already exist" + employee.getEmail());
-            }
-        }
-        return false;
-    }
 
     @Override
     public void delete(User employee) {
@@ -146,6 +145,18 @@ public class UserServiceImpl implements UserService {
     public void setLoginTime(Long userId) {
 
         userRepository.setLoginTime(userId);
+    }
+
+    @Override
+    public void setSalary(User employee) {
+
+
+
+        if (employee.getSalary().compareTo(employee.getDepartment().getMinSalary()) >= 0 && employee.getSalary().compareTo(employee.getDepartment().getMaxSalary()) <= 0) {
+            employee.setSalary(employee.getSalary());
+        } else { // automatically adjusted (to max)
+            employee.setSalary(employee.getDepartment().getMaxSalary());
+        }
     }
 
     @Override

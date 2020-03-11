@@ -55,10 +55,9 @@ public class EmployeeRestController {
 
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @GetMapping("/{id}")
-    public EmployeeReadDTO getEmployeeById(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
+    public EmployeeReadDTO getEmployeeById(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User user = userService.findUser(id);
-
         return modelMapper.map(user, EmployeeReadDTO.class);
     }
 
@@ -89,43 +88,16 @@ public class EmployeeRestController {
     }
 
     // -------------------Create an Employee-------------------------------------------
-    @Secured("ROLE_CEO")
+    @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/")
     public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeDTO employeeDTO) throws NotFoundException, UserExistsException {
-        User employee = modelMapper.map(employeeDTO, User.class);
-        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        log.info("Creating User : {}", employee);
-        if (userService.isEmailExist(employee)) {
-            log.error("Unable to create. A User with email {} already exist", employee.getEmail());
-
-        }
-
-        Department department = departmentService.findOne(employee.getDepartment().getId());
-        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getSalary(), department);
-        return modelMapper.map(employee, EmployeeReadDTO.class);
-    }
-
-    @Secured("ROLE_HEAD")
-    @PostMapping("/departments")
-    @ResponseStatus(HttpStatus.CREATED)
-    public EmployeeReadDTO createEmployeeInHeadDepartment(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeDTO employeeDTO) throws UserExistsException {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        User employee = modelMapper.map(employeeDTO, User.class);
-
-        if (userService.isEmailExist(employee)) {
-            log.error("Unable to create. A User with email {} already exist", employee.getEmail());
-
-        }
-        Department department = userService.findByEmail(auth.getUsername()).getDepartment();
-        department.getEmployees().add(employee);
-        departmentService.updateDepartment(department);
-        employee.setDepartment(department);
-        userService.createEmployee(employee.getFirstName(), employee.getLastName(), employee.getEmail(), employee.getPassword(), employee.getSalary(), employee.getDepartment());
-        return modelMapper.map(employee, EmployeeReadDTO.class);
-
+        userService.createEmployee(employeeDTO);
+        return modelMapper.map(employeeDTO, EmployeeReadDTO.class);
     }
+
 
     // -------------------Update an Employee-------------------------------------------
 
@@ -163,7 +135,7 @@ public class EmployeeRestController {
 
 
     @Secured("ROLE_HEAD")
-    @PutMapping("password/{id}/")
+    @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeePasswordDTO employeePasswordDTO, @PathVariable Long id) {
 
@@ -178,7 +150,7 @@ public class EmployeeRestController {
 
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/salary/{id}")
+    @PutMapping("/{id}/salary")
     public void setSalary(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeSalaryDTO employeeSalaryDTO, @PathVariable Long id) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
@@ -204,7 +176,7 @@ public class EmployeeRestController {
 
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/disable/{id}")
+    @PutMapping("/{id}/disable")
     public void disable(@AuthenticationPrincipal UserDetails auth, @PathVariable Long id) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());

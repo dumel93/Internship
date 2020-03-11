@@ -1,5 +1,6 @@
 package task1.soft.api.service;
 
+import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 
@@ -20,16 +21,16 @@ public interface UserService {
 
     void createRoles();
 
-    void createEmployee(String firstName, String lastName, String email, String password, BigDecimal salary, Department department);
+    void createEmployee(EmployeeDTO employeeDTO);
 
-    void updatePassword(User emp, String newPassword);
-
-    boolean isEmailExist(User employee);
+    void updatePassword(User employee, String newPassword);
 
     void delete(User employee);
 
     User findByEmail(String email);
 
     void setLoginTime(Long userId);
+
+    void setSalary(User employee);
 
 }

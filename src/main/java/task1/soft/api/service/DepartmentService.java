@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface DepartmentService {
 
-    Department createDepartment(String name, String city);
+    Department createDepartment(DepartmentDTO departmentDTO);
 
     Department updateDepartment(Department department);
 
