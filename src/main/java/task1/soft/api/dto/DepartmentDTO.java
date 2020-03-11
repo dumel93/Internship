@@ -22,7 +22,7 @@ public class DepartmentDTO {
     @JsonProperty("min_salary")
     private BigDecimal minSalary;
 
-    @Min(value = 0)
+    @Min(value = 0,message = "must be a positive number")
     @JsonProperty("max_salary")
     private BigDecimal maxSalary;
 

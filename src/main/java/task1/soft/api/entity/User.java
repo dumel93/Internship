@@ -72,27 +72,9 @@ public class User {
     private LocalDateTime lastLoginTime;
 
 
-    private boolean sameAsFormer(Department newDepartment) {
-
-        return department==null? newDepartment == null : department.equals(newDepartment);
-
-    }
-
     public void setDepartment(Department department) {
-
-        //prevent endless loop
-        if (sameAsFormer(department))
-            return;
-        //set new department
-        Department oldDepartment = this.department;
         this.department = department;
-
-        //remove from the old department
-        if (oldDepartment != null)
-            oldDepartment.removeEmployee(this);
-        //set myself into new department
-        if (oldDepartment != null && this.department!=null)
-            department.addEmployees(this);
+        this.department.getEmployees().add(this);
 
     }
 

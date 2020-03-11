@@ -2,9 +2,6 @@ package task1.soft.api.service;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.EmployeeReadDTO;
@@ -14,7 +11,6 @@ import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.exception.NotFoundException;
 
-import javax.naming.NoPermissionException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -83,7 +79,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
         if (departmentDTO.getNumberOfEmployees() == 0) {
-            departmentDTO.setAverageSalary(new BigDecimal(("0")));
+            departmentDTO.setAverageSalary(BigDecimal.valueOf(0));
         }
         BigDecimal medianSalary = calculateMedian(idDepart);
         departmentDTO.setMedianSalary(medianSalary);
@@ -112,6 +108,46 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
 
+
+   /**
+    * Add new employee to the department. The method keeps
+    * relationships consistency:
+    * * this department is set as the employee owner
+    */
+    public void addEmployee(Long idDepart,User employee) {
+
+        Department department= this.findOne(idDepart);
+        List<User> employees= department.getEmployees();
+        //prevent endless loop
+        if (employees.contains(employee)){
+            return;
+        }
+        //add new employee
+        employees.add(employee);
+        //set myself into the employee account
+        employee.setDepartment(department);
+
+    }
+
+    /**
+     * Removes the employee from the department. The method keeps
+     * relationships consistency:
+     */
+
+    public void removeEmployee(Long idDepart,User employee) {
+        Department department= this.findOne(idDepart);
+        List<User> employees= department.getEmployees();
+        //prevent endless loop
+        if (!employees.contains(employee)){
+            return;
+        }
+        //remove the employee
+        employees.remove(employee);
+        //remove myself from the employee
+        employee.setDepartment(null);
+    }
+
+
     private BigDecimal calcMedian(Long idDepart) {
 
         Department department = this.findOne(idDepart);
@@ -121,12 +157,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         double pos1 = Math.floor((salariesList.size() - 1.0) / 2.0);
         double pos2 = Math.ceil((salariesList.size() - 1.0) / 2.0);
         if (salariesList.size() == 0) {
-            return new BigDecimal("0");
+            return BigDecimal.valueOf(0);
         }
         if (pos1 == pos2) {
             median = salariesList.get((int) pos1);
         } else {
-            median = (salariesList.get((int) pos1)).add(salariesList.get((int) pos2)).divide(new BigDecimal("2"));
+            median = (salariesList.get((int) pos1)).add(salariesList.get((int) pos2)).divide(BigDecimal.valueOf(2));
         }
 
         return median;

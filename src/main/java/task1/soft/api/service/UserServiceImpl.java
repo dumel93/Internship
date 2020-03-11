@@ -137,7 +137,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User employee) {
         Department department= employee.getDepartment();
-        department.removeEmployee(employee);
         userRepository.delete(employee);
 
     }

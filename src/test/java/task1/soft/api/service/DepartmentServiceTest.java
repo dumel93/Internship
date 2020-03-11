@@ -12,7 +12,10 @@ import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+import task1.soft.api.exception.NoDeletePermissionException;
+import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.repo.DepartmentRepository;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +78,19 @@ public class DepartmentServiceTest {
 
         when(departmentRepository.findOne(1L)).thenReturn(department);
         // 	when
-        Department result = departmentService.updateDepartment(department);
+        Department result = departmentService.findOne(1L);
         // 	then
         assertEquals(department.getId(), result.getId());
         assertEquals(result.getName(), "it");
     }
 
+    @Test(expected = NotFoundException.class)
+    public void findOneDepartmentFailTest() {
+        //	given
+        when(departmentRepository.findOne(3L)).thenThrow(NotFoundException.class);
+        // 	when
+        departmentService.findOne(3L);
+    }
 
     @Test
     public void deleteDepartmentWithoutEmployeesTest() {
@@ -99,7 +109,7 @@ public class DepartmentServiceTest {
 
     }
 
-    @Test
+    @Test(expected = NoDeletePermissionException.class)
     public void deleteDepartmentWithEmployeesTest() {
         Department department = new Department();
         department.setName("it");
@@ -109,10 +119,11 @@ public class DepartmentServiceTest {
         user.setLastName("k");
         user.setEmail("i@wp.pl");
         user.setSalary(new BigDecimal("1000"));
-        department.addEmployees(user);
+        user.setDepartment(department);
 
         when(departmentRepository.findOne(1L)).thenReturn(department);
-        Mockito.doNothing().when(departmentRepository).delete(1L);
+        doThrow(new NoDeletePermissionException("Cannot delete this department because there are still employees"))
+                .when(departmentRepository).delete(1L);
 
         departmentService.delete(1L);
 
@@ -187,9 +198,9 @@ public class DepartmentServiceTest {
         user3.setFirstName("d2");
         user3.setSalary(new BigDecimal("3000"));
 
-        department.addEmployees(user1);
-        department.addEmployees(user2);
-        department.addEmployees(user3);
+        user1.setDepartment(department);
+        user2.setDepartment(department);
+        user3.setDepartment(department);
 
         when(departmentRepository.findOne(1L)).thenReturn(department);
         //when

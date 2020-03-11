@@ -1,13 +1,11 @@
 package task1.soft.api.restcontroller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.el.parser.ParseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
@@ -17,11 +15,12 @@ import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
 import task1.soft.api.exception.NotFoundException;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Validated
+
 @Secured("ROLE_CEO")
 @RestController
 @RequiredArgsConstructor
@@ -36,18 +35,16 @@ public class DepartmentRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth
+    public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth) {
 
-    ) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         List<Department> departments;
         departments = departmentService.findAll();
-
         return departments.stream()
-                .map(entity -> modelMapper.map(entity, DepartmentDTO.class))
+                .map(department -> modelMapper.map(department, DepartmentDTO.class))
                 .collect(Collectors.toList())
                 .stream()
-                .map(entity -> departmentService.getAllDepartmentDetails(entity.getId()))
+                .map(department -> departmentService.getAllDepartmentDetails(department.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -65,7 +62,7 @@ public class DepartmentRestController {
     // -------------------createDepartment-------------------------------------------
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DepartmentDTO createDepartment(@RequestBody DepartmentDTO departmentDTO, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+    public DepartmentDTO createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @AuthenticationPrincipal UserDetails auth)  {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = modelMapper.map(departmentDTO, Department.class);
         Department departmentCreated = departmentService.createDepartment(department.getName(), department.getCity());
@@ -75,7 +72,7 @@ public class DepartmentRestController {
     // -------------------UpdateDepartment-------------------------------------------
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public DepartmentDTO updateDepartment(@RequestBody DepartmentDTO departmentDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException {
+    public DepartmentDTO updateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = modelMapper.map(departmentDTO, Department.class);
         department.setId(id);
@@ -87,7 +84,7 @@ public class DepartmentRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/salary")
-    public DepartmentDTO setMinSalaryAndMaxSalary(@RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws ParseException, NotFoundException {
+    public DepartmentDTO setMinSalaryAndMaxSalary(@Valid @RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws  NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = departmentService.findOne(id);
         department.setMinSalary(departmentSalariesDTO.getMinSalary());

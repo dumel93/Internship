@@ -13,5 +13,4 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 public class MethodSecurityConfig
 
         extends GlobalMethodSecurityConfiguration {
-
 }

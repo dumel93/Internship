@@ -1,10 +1,9 @@
 package task1.soft.api.entity;
 
 import lombok.Data;
-
+import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,61 +19,22 @@ public class Department {
     private Long id;
 
     @Column
-    @NotNull
+    @NotEmpty(message = "name cannot be empty")
     private String name;
 
     @Column
-    @NotNull
+    @NotEmpty(message = "city cannot be empty")
     private String city;
 
     @OneToMany(mappedBy = "department", cascade = {CascadeType.ALL})
     private List<User> employees = new ArrayList<>();
 
     @Column
-    @Min(value = 0)
+    @Min(value = 0,message = "must be a positive number")
     private BigDecimal minSalary;
 
     @Column
-    @Min(value = 0)
+    @Min(value = 0,message = "must be a positive number")
     private BigDecimal maxSalary;
-
-
-
-
-    /**
-     * Add new employee to the department. The method keeps
-     * relationships consistency:
-     * * this department is set as the employee owner
-     */
-    public void addEmployees(User employee) {
-
-        //prevent endless loop
-        if (employees.contains(employee)){
-            return;
-        }
-        //add new employee
-        employees.add(employee);
-        //set myself into the employee account
-        employee.setDepartment(this);
-
-    }
-
-    /**
-     * Removes the employee from the department. The method keeps
-     * relationships consistency:
-     */
-
-    public void removeEmployee(User employee) {
-
-        //prevent endless loop
-        if (!employees.contains(employee)){
-            return;
-        }
-        //remove the employee
-        employees.remove(employee);
-        //remove myself from the employee
-        employee.setDepartment(null);
-
-    }
 
 }
