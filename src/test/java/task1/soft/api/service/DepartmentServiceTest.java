@@ -15,11 +15,9 @@ import task1.soft.api.entity.User;
 import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.repo.DepartmentRepository;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

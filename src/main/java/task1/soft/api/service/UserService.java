@@ -1,10 +1,7 @@
 package task1.soft.api.service;
 
 import task1.soft.api.dto.EmployeeDTO;
-import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {

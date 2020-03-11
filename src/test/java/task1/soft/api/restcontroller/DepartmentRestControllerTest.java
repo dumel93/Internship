@@ -18,9 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import task1.soft.api.Application;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
-
 import java.math.BigDecimal;
-
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -112,24 +110,24 @@ public class DepartmentRestControllerTest {
     }
 
 
-//    @Test
-//    public void updateDepartmentTest() throws Exception {
-//
-//
-//        DepartmentDTO departmentDTO= new DepartmentDTO();
-//        departmentDTO.setName("it");
-//        departmentDTO.setCity("wroclaw");
-//
-//        mockMvc.perform(MockMvcRequestBuilders
-//                .put("/departments/{id}", 2)
-//                .content(asJsonString(departmentDTO))
-//                .contentType(MediaType.APPLICATION_JSON_UTF8)
-//                .accept(MediaType.APPLICATION_JSON_UTF8))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id", is(2)))
-//                .andExpect(jsonPath("$.city", is("wroclaw")));
-//
-//    }
+    @Test
+    public void updateDepartmentTest() throws Exception {
+
+
+        DepartmentDTO departmentDTO= new DepartmentDTO();
+        departmentDTO.setName("it");
+        departmentDTO.setCity("wroclaw");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/departments/{id}", 2)
+                .content(asJsonString(departmentDTO))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(2)))
+                .andExpect(jsonPath("$.city", is("wroclaw")));
+
+    }
 
     @Test
     public void updateDepartmentFailTest() throws Exception {

@@ -1,20 +1,14 @@
 package task1.soft.api.service;
 
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import task1.soft.api.dto.EmployeeDTO;
 import task1.soft.api.entity.*;
 import task1.soft.api.exception.NotFoundException;
-import task1.soft.api.exception.UserExistsException;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;

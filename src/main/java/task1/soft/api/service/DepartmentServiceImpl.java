@@ -10,7 +10,6 @@ import task1.soft.api.entity.User;
 import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.exception.NotFoundException;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -79,7 +78,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByDepartId(idDepart));
 
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
-        if (departmentDTO.getNumberOfEmployees()==0) {
+        if (departmentDTO.getNumberOfEmployees() == 0) {
             departmentDTO.setAverageSalary(BigDecimal.valueOf(0));
         }
         BigDecimal medianSalary = calculateMedian(idDepart);
@@ -167,7 +166,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return median;
     }
-
 
 }
 
