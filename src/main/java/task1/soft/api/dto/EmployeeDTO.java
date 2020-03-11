@@ -28,6 +28,7 @@ public class EmployeeDTO {
 
     @NotNull
     @Email
+    @Column(unique = true)
     private String email;
 
     @NotNull

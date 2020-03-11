@@ -72,12 +72,6 @@ public class User {
     private LocalDateTime lastLoginTime;
 
 
-    public void setDepartment(Department department) {
-        this.department = department;
-        this.department.getEmployees().add(this);
-
-    }
-
 }
 
 

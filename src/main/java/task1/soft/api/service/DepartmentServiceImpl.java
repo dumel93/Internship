@@ -108,18 +108,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
 
+    /**
+     * Add new employee to the department. The method keeps
+     * relationships consistency:
+     * * this department is set as the employee owner
+     */
+    @Override
+    public void addEmployee(Long idDepart, User employee) {
 
-   /**
-    * Add new employee to the department. The method keeps
-    * relationships consistency:
-    * * this department is set as the employee owner
-    */
-    public void addEmployee(Long idDepart,User employee) {
-
-        Department department= this.findOne(idDepart);
-        List<User> employees= department.getEmployees();
+        Department department = this.findOne(idDepart);
+        List<User> employees = department.getEmployees();
         //prevent endless loop
-        if (employees.contains(employee)){
+        if (employees.contains(employee)) {
             return;
         }
         //add new employee
@@ -133,12 +133,12 @@ public class DepartmentServiceImpl implements DepartmentService {
      * Removes the employee from the department. The method keeps
      * relationships consistency:
      */
-
-    public void removeEmployee(Long idDepart,User employee) {
-        Department department= this.findOne(idDepart);
-        List<User> employees= department.getEmployees();
+    @Override
+    public void removeEmployee(Long idDepart, User employee) {
+        Department department = this.findOne(idDepart);
+        List<User> employees = department.getEmployees();
         //prevent endless loop
-        if (!employees.contains(employee)){
+        if (!employees.contains(employee)) {
             return;
         }
         //remove the employee

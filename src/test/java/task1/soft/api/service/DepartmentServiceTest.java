@@ -198,11 +198,10 @@ public class DepartmentServiceTest {
         user3.setFirstName("d2");
         user3.setSalary(new BigDecimal("3000"));
 
-        user1.setDepartment(department);
-        user2.setDepartment(department);
-        user3.setDepartment(department);
-
         when(departmentRepository.findOne(1L)).thenReturn(department);
+        departmentService.addEmployee(1L,user1);
+        departmentService.addEmployee(1L,user2);
+        departmentService.addEmployee(1L,user3);
         //when
         BigDecimal result = departmentService.calculateMedian(1L);
         //then
@@ -232,6 +231,66 @@ public class DepartmentServiceTest {
     }
 
 
+    @Test
+    public void addEmployeeTest() {
+        Department department = new Department();
+        department.setName("it");
+        department.setCity("rzeszow");
+
+        User user1 = new User();
+        user1.setFirstName("d");
+        user1.setSalary(new BigDecimal("1000"));
+
+        User user2 = new User();
+        user2.setFirstName("d2");
+        user2.setSalary(new BigDecimal("2000"));
+
+        User user3 = new User();
+        user3.setFirstName("d2");
+        user3.setSalary(new BigDecimal("3000"));
+
+        when(departmentRepository.findOne(1L)).thenReturn(department);
+        departmentService.addEmployee(1L,user1);
+        departmentService.addEmployee(1L,user2);
+        departmentService.addEmployee(1L,user3);
+
+        assertEquals(department.getEmployees().size(), 3);
+        assertEquals(department.getEmployees().get(0), user1);
+        assertEquals(department.getEmployees().get(1), user2);
+        assertEquals(department.getEmployees().get(2), user3);
+    }
+
+    @Test
+    public void removeEmployeeTest() {
+        Department department = new Department();
+        department.setName("it");
+        department.setCity("rzeszow");
+
+        User user1 = new User();
+        user1.setFirstName("d");
+        user1.setSalary(new BigDecimal("1000"));
+
+        User user2 = new User();
+        user2.setFirstName("d2");
+        user2.setSalary(new BigDecimal("2000"));
+
+        User user3 = new User();
+        user3.setFirstName("d2");
+        user3.setSalary(new BigDecimal("3000"));
+
+        when(departmentRepository.findOne(1L)).thenReturn(department);
+        departmentService.addEmployee(1L,user1);
+        departmentService.addEmployee(1L,user2);
+        departmentService.addEmployee(1L,user3);
+
+        departmentService.removeEmployee(1L,user1);
+
+        assertEquals(department.getEmployees().size(), 2);
+        assertEquals(department.getEmployees().get(0), user2);
+        assertEquals(department.getEmployees().get(1), user3);
+
+
+    }
 }
 
 

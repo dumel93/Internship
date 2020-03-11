@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import task1.soft.api.entity.*;
+import task1.soft.api.exception.UserExistsException;
 import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
@@ -128,7 +129,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
         for (User user : users) {
             if (user.getEmail().equals(employee.getEmail())) {
-                return true;
+                throw new UserExistsException("Unable to create. A User with email {} already exist" + employee.getEmail());
             }
         }
         return false;

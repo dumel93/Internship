@@ -16,10 +16,12 @@ import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.dto.EmployeeSalaryDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+import task1.soft.api.exception.UserExistsException;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
 import task1.soft.api.exception.NotFoundException;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,19 +42,14 @@ public class EmployeeRestController {
     // -------------------Get an Employee/s-------------------------------------------
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @GetMapping
-    public List<EmployeeReadDTO> getAllEmployees(@AuthenticationPrincipal UserDetails auth,
-                                                 @RequestParam(value = "search", required = false) String search,
-                                                 @RequestParam(defaultValue = "0") Integer offset,
-                                                 @RequestParam(defaultValue = "5") Integer limit,
-                                                 @RequestParam(defaultValue = "id") String sortBy,
-                                                 @RequestParam(defaultValue = "asc") String orderBy
-    ) {
+    public List<EmployeeReadDTO> getAllEmployees(@AuthenticationPrincipal UserDetails auth
+
+                                                 ) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        List<User> employees;
-        employees = userService.findAll(offset, limit, sortBy, orderBy);
+        List<User> employees = userService.findAll();
 
         return employees.stream()
-                .map(entity -> modelMapper.map(entity, EmployeeReadDTO.class))
+                .map(employee -> modelMapper.map(employee, EmployeeReadDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -95,7 +92,7 @@ public class EmployeeRestController {
     @Secured("ROLE_CEO")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/")
-    public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) throws NotFoundException {
+    public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeDTO employeeDTO) throws NotFoundException, UserExistsException {
         User employee = modelMapper.map(employeeDTO, User.class);
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         log.info("Creating User : {}", employee);
@@ -112,7 +109,7 @@ public class EmployeeRestController {
     @Secured("ROLE_HEAD")
     @PostMapping("/departments")
     @ResponseStatus(HttpStatus.CREATED)
-    public EmployeeReadDTO createEmployeeInHeadDepartment(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeeDTO) {
+    public EmployeeReadDTO createEmployeeInHeadDepartment(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeDTO employeeDTO) throws UserExistsException {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = modelMapper.map(employeeDTO, User.class);
@@ -135,7 +132,7 @@ public class EmployeeRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    void updateEmployee(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeDTO employeePasswordDTO, @PathVariable Long id) {
+    void updateEmployee(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeDTO employeePasswordDTO, @PathVariable Long id) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = modelMapper.map(employeePasswordDTO, User.class);
@@ -168,7 +165,7 @@ public class EmployeeRestController {
     @Secured("ROLE_HEAD")
     @PutMapping("password/{id}/")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeePasswordDTO employeePasswordDTO, @PathVariable Long id) {
+    public void updatePassword(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeePasswordDTO employeePasswordDTO, @PathVariable Long id) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = userService.findUser(id);
@@ -182,7 +179,7 @@ public class EmployeeRestController {
     @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/salary/{id}")
-    public void setSalary(@AuthenticationPrincipal UserDetails auth, @RequestBody EmployeeSalaryDTO employeeSalaryDTO, @PathVariable Long id) {
+    public void setSalary(@AuthenticationPrincipal UserDetails auth, @Valid @RequestBody EmployeeSalaryDTO employeeSalaryDTO, @PathVariable Long id) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = modelMapper.map(employeeSalaryDTO, User.class);
@@ -220,7 +217,6 @@ public class EmployeeRestController {
             employee.setActive(false);
             userService.updateUser(employee);
         }
-
 
     }
 

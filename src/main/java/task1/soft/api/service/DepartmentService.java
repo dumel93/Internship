@@ -27,5 +27,7 @@ public interface DepartmentService {
 
     User findHeadByIdDepart(Long idDepart);
 
+    void addEmployee(Long idDepart, User employee);
 
+    public void removeEmployee(Long idDepart, User employee);
 }
