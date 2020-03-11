@@ -11,6 +11,5 @@ public class EmployeePasswordDTO {
 
     @NotNull
     @Length(min = 6)
-    @Email
     private String password;
 }

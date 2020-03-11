@@ -2,7 +2,6 @@ package task1.soft.api.exception;
 
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -27,6 +26,7 @@ class RestErrorHandler {
     @ResponseBody
     @ExceptionHandler(NotFoundException.class)
     Error notFoundException(NotFoundException ex) {
+
         return new Error(ex.getMessage());
     }
 
@@ -34,6 +34,7 @@ class RestErrorHandler {
     @ResponseBody
     @ExceptionHandler(NoDeletePermissionException.class)
     Error noDeletePermissionException(NoDeletePermissionException ex) {
+
         return new Error(ex.getMessage());
     }
 
