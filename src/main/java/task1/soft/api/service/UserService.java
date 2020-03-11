@@ -32,6 +32,4 @@ public interface UserService {
 
     void setLoginTime(Long userId);
 
-
-    List<User> findAll(Integer offset, Integer limit, String sortBy, String orderBy);
 }

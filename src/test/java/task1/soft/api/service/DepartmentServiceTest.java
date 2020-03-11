@@ -289,7 +289,6 @@ public class DepartmentServiceTest {
         assertEquals(department.getEmployees().get(0), user2);
         assertEquals(department.getEmployees().get(1), user3);
 
-
     }
 }
 

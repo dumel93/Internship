@@ -1,6 +1,5 @@
 package task1.soft.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -55,7 +54,6 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @JsonIgnore
     @Column
     private boolean isHead;
 
@@ -70,7 +68,6 @@ public class User {
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
-
 
 }
 

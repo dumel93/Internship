@@ -39,12 +39,12 @@ public class EmployeeRestController {
     private final DepartmentService departmentService;
     private final ModelMapper modelMapper;
 
+
     // -------------------Get an Employee/s-------------------------------------------
     @Secured({"ROLE_CEO", "ROLE_HEAD"})
     @GetMapping
-    public List<EmployeeReadDTO> getAllEmployees(@AuthenticationPrincipal UserDetails auth
+    public List<EmployeeReadDTO> getAllEmployees(@AuthenticationPrincipal UserDetails auth) {
 
-                                                 ) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         List<User> employees = userService.findAll();
 

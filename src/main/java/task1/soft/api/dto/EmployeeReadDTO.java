@@ -27,6 +27,8 @@ public class EmployeeReadDTO {
     @Email
     private String email;
 
+    private boolean isHead;
+
     @Min(value = 0)
     @NotNull
     private BigDecimal salary;

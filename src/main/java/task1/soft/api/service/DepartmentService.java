@@ -29,5 +29,5 @@ public interface DepartmentService {
 
     void addEmployee(Long idDepart, User employee);
 
-    public void removeEmployee(Long idDepart, User employee);
+    void removeEmployee(Long idDepart, User employee);
 }

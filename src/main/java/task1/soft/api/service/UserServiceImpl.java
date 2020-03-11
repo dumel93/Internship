@@ -13,11 +13,6 @@ import task1.soft.api.repo.PhoneRepository;
 import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,7 +34,6 @@ public class UserServiceImpl implements UserService {
 
     private final DepartmentService departmentService;
 
-    private final EntityManager entityManager;
 
     @Override
     public void setupCEO() {
@@ -100,10 +94,10 @@ public class UserServiceImpl implements UserService {
         employee.setPassword(passwordEncoder.encode(password));
         if (employee.isHead()) {
             Role userRole = roleRepository.findByName("ROLE_HEAD");
-            employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+            employee.setRoles(new HashSet<>(Collections.singletonList(userRole)));
         }
         Role userRole = roleRepository.findByName("ROLE_EMPLOYEE");
-        employee.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+        employee.setRoles(new HashSet<>(Collections.singletonList(userRole)));
         employee.setDateOfEmployment(LocalDate.now());
         employee.setDepartment(department);
 
@@ -123,9 +117,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
-    public boolean isEmailExist(User employee) {
+    public boolean isEmailExist(User employee) throws UserExistsException {
         List<User> users = userRepository.findAll();
         for (User user : users) {
             if (user.getEmail().equals(employee.getEmail())) {
@@ -137,33 +130,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(User employee) {
-        Department department= employee.getDepartment();
+        Department department = employee.getDepartment();
+        departmentService.removeEmployee(department.getId(),employee);
         userRepository.delete(employee);
 
     }
 
     @Override
     public User findByEmail(String email) {
+
         return userRepository.findByEmail(email);
     }
 
     @Override
     public void setLoginTime(Long userId) {
+
         userRepository.setLoginTime(userId);
-    }
-
-
-
-    @Override
-    public List<User> findAll(Integer offset, Integer limit, String sortBy, String orderBy) {
-        if (orderBy.toUpperCase().equals("DESC")) {
-            Sort sortdesc = new Sort(new Sort.Order(Sort.Direction.DESC, sortBy));
-            Pageable pageable = new PageRequest(offset, limit, sortdesc);
-            return userRepository.findAll(pageable).getContent();
-        }
-        Sort sort = new Sort(new Sort.Order(Sort.Direction.ASC, sortBy));
-        Pageable pageable = new PageRequest(offset, limit, sort);
-        return userRepository.findAll(pageable).getContent();
     }
 
     @Override
@@ -175,7 +157,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.isHead()) {
             Role userRole = roleRepository.findByName("ROLE_HEAD");
-            user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
+            user.setRoles(new HashSet<>(Collections.singletonList(userRole)));
         }
         user.setDepartment(user.getDepartment());
         user.setDateOfEmployment(user.getDateOfEmployment());

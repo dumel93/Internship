@@ -40,6 +40,8 @@ public class EmployeeDTO {
     @NotNull
     private BigDecimal salary;
 
+    private boolean isHead;
+
     @JsonProperty("department_id")
     private Long departmentId;
 
