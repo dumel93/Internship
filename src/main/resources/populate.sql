@@ -8,8 +8,6 @@ drop table if exists USER_ROLE;
 -- TRUNCATE TABLE departments   TO NIE DZIALA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 -- TRUNCATE TABLE users
 
-
-
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE departments (
