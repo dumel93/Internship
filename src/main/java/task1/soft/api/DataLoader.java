@@ -16,7 +16,7 @@ public class DataLoader {
     @EventListener(ApplicationReadyEvent.class)
     public void setUpDB() {
 
-        if (userService.findAll().isEmpty()) {
+        if (userService.findAllEmployees().isEmpty()) {
             userService.createRoles();
             userService.setupCEO();
 
