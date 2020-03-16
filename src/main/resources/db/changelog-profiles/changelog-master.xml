@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+	  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="damian">
+
+
+        <createTable tableName="roles">
+            <column name="role_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+
+
+        <createTable tableName="departments">
+            <column name="department_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="department_id"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="city" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="min_salary" type="NUMERIC"/>
+
+            <column name="max_salary" type="NUMERIC"/>
+
+
+        </createTable>
+
+        <createTable tableName="users">
+            <column name="user_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="first_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="password" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="email" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+
+            <column name="active" type="boolean"
+                    defaultValueBoolean="false"/>
+            <column name="department_id" type="BIGINT"/>
+
+            <column name="is_head" type="boolean"
+                    defaultValueBoolean="false"/>
+
+            <column name="salary" type="NUMERIC"/>
+            <column name="created_date" type="date">
+            </column>
+
+            <column name="last_login_time" type="datetime">
+            </column>
+        </createTable>
+
+
+        <createTable tableName="user_role">
+            <column name="role_id" type="BIGINT">
+                <constraints foreignKeyName="fk_role_id" referencedTableName="roles" referencedColumnNames="role_id"
+                             nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_user_id" referencedTableName="users" referencedColumnNames="user_id"
+                             nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="phones">
+            <column name="phone_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employee_id" type="BIGINT">
+            </column>
+        </createTable>
+        <sql>ALTER TABLE phones ADD CONSTRAINT type CHECK (type = 'BUSINESS' OR type = 'PRIVATE')</sql>
+
+
+        <addForeignKeyConstraint baseColumnNames="department_id"
+                                 baseTableName="users"
+
+                                 constraintName="fk_user_department_id"
+
+                                 onDelete="CASCADE" 
+                                 onUpdate="RESTRICT"
+
+                                 referencedColumnNames="department_id"
+                                 referencedTableName="departments"
+                                 validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="phones"
+
+                                 constraintName="fk_phones"
+
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="users"
+                                 validate="true"/>
+
+    </changeSet>
+</databaseChangeLog>
