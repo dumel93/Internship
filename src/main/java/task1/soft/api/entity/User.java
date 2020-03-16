@@ -4,13 +4,15 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -37,7 +39,7 @@ public class User {
     private String email;
 
     @Column
-    @Length(min = 6, message = "*Your password must have at least 6 characters")
+    @Length(min = 6, message = "*Your password must have at least 5 characters")
     private String password;
 
     @Column(name = "active")
@@ -48,8 +50,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @Transient
-    private Set<Phone> phones;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Phone> phones;
 
     @ManyToOne
     @JoinColumn(name = "department_id")

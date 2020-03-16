@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-public class NotFoundException extends RuntimeException {
+public class UserExistsException extends RuntimeException {
 
     private String message;
 

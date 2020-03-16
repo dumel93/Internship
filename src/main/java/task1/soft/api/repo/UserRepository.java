@@ -11,11 +11,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmail(String email);
 
-    @Query(value = "select u from User u where u.department.id= ?1 ")
+    @Query(value = "select u from User u where u.department.id = ?1 ")
     List<User> findAllEmployeesOfDepartment(Long idDepart);
 
     @Modifying
-    @Query("update User u set u.lastLoginTime = current_timestamp where u.id =?1 ")
+    @Query("update User u set u.lastLoginTime = current_timestamp where u.id = ?1 ")
     void setLoginTime(Long userId);
+
+    boolean existsByEmail(String email);
+
 
 }

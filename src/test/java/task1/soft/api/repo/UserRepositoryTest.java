@@ -1,7 +1,6 @@
 package task1.soft.api.repo;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import task1.soft.api.entity.User;
-import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -30,18 +29,16 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Test
-    public void findByEmail() {
+    public void testFindByEmail() {
 
         User user = userRepository.findOne(1L);
         Assert.assertEquals(user, userRepository.findByEmail("ceo@pgs.com"));
     }
 
     @Test
-    public void findAllEmployeesOfDepartment() {
+    public void testFindAllEmployeesOfDepartment() {
         User user = userRepository.findOne(2L);
         User user2 = userRepository.findOne(3L);
         List<User> users = Arrays.asList(user, user2);
@@ -49,7 +46,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void setLoginTime() {
+    public void testSetLoginTime() {
 
         userRepository.setLoginTime(2L);
         User user = userRepository.findOne(2L);

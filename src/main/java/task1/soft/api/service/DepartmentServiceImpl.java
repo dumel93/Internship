@@ -8,8 +8,8 @@ import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.exception.NoDeletePermissionException;
-import task1.soft.api.repo.DepartmentRepository;
 import task1.soft.api.exception.NotFoundException;
+import task1.soft.api.repo.DepartmentRepository;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;

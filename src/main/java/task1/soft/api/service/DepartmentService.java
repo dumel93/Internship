@@ -3,7 +3,7 @@ package task1.soft.api.service;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
-import task1.soft.api.exception.NotFoundException;
+
 import java.math.BigDecimal;
 import java.util.List;
 

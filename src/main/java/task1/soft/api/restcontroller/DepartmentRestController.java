@@ -1,6 +1,6 @@
 package task1.soft.api.restcontroller;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -11,9 +11,9 @@ import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.exception.NoDeletePermissionException;
+import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.service.DepartmentService;
 import task1.soft.api.service.UserService;
-import task1.soft.api.exception.NotFoundException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 
 @Secured("ROLE_CEO")
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/departments")
 public class DepartmentRestController {
 
-    private final DepartmentService departmentService;
-    private final ModelMapper modelMapper;
-    private final UserService userService;
+    private DepartmentService departmentService;
+    private ModelMapper modelMapper;
+    private UserService userService;
 
     // -------------------getDepartments-------------------------------------------
     @Secured("ROLE_HEAD")
@@ -48,10 +48,11 @@ public class DepartmentRestController {
     }
 
 
-    @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
+    @Secured("ROLE_HEAD")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public DepartmentDTO getDepartment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
+    public DepartmentDTO getDepartment(@PathVariable("id") Long id,
+                                       @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         Department department = departmentService.findDepartment(id);
         return departmentService.getAllDepartmentDetails(department.getId());
@@ -73,6 +74,7 @@ public class DepartmentRestController {
     @ResponseStatus(HttpStatus.OK)
     public DepartmentDTO updateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
+        departmentService.findDepartment(id);
         departmentDTO.setId(id);
         Department department = modelMapper.map(departmentDTO, Department.class);
         departmentService.updateDepartment(departmentDTO);
@@ -80,7 +82,7 @@ public class DepartmentRestController {
 
     }
 
-    @Secured("ROLE_HEAD")
+
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/salary")
     public DepartmentDTO setMinSalaryAndMaxSalary(@Valid @RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
@@ -89,7 +91,7 @@ public class DepartmentRestController {
         department.setMinSalary(departmentSalariesDTO.getMinSalary());
         department.setMaxSalary(departmentSalariesDTO.getMaxSalary());
         department.setId(id);
-        DepartmentDTO departmentDTO= modelMapper.map(department,DepartmentDTO.class);
+        DepartmentDTO departmentDTO = modelMapper.map(department, DepartmentDTO.class);
         departmentService.updateDepartment(departmentDTO);
         return departmentService.getAllDepartmentDetails(department.getId());
 

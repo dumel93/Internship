@@ -1,6 +1,7 @@
 package task1.soft.api.restcontroller;
 
 
+import task1.soft.api.Application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,15 +13,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import task1.soft.api.Application;
 import task1.soft.api.dto.DepartmentDTO;
 import task1.soft.api.dto.DepartmentSalariesDTO;
 import java.math.BigDecimal;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+;
 
 
 @RunWith(SpringRunner.class)
@@ -36,7 +39,7 @@ public class DepartmentRestControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void getDepartmentsTest() throws Exception {
+    public void testGetDepartments() throws Exception {
 
 
         mockMvc.perform(MockMvcRequestBuilders.get("/departments"))
@@ -54,7 +57,7 @@ public class DepartmentRestControllerTest {
 
 
     @Test
-    public void getDepartmentTest() throws Exception {
+    public void testGetDepartment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/departments/{id}", 1L))
                 .andExpect(status().isOk())
@@ -71,7 +74,7 @@ public class DepartmentRestControllerTest {
 
 
     @Test
-    public void createDepartmentTest() throws Exception {
+    public void testCreateDepartment() throws Exception {
 
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setName("it");
@@ -88,7 +91,7 @@ public class DepartmentRestControllerTest {
     }
 
     @Test
-    public void createDepartmentFailTest() throws Exception {
+    public void testCreateDepartmentFail() throws Exception {
         DepartmentDTO departmentDTO2 = new DepartmentDTO();
         departmentDTO2.setName("");
         departmentDTO2.setCity("");
@@ -111,10 +114,10 @@ public class DepartmentRestControllerTest {
 
 
     @Test
-    public void updateDepartmentTest() throws Exception {
+    public void testUpdateDepartment() throws Exception {
 
 
-        DepartmentDTO departmentDTO= new DepartmentDTO();
+        DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setName("it");
         departmentDTO.setCity("wroclaw");
 
@@ -130,7 +133,7 @@ public class DepartmentRestControllerTest {
     }
 
     @Test
-    public void updateDepartmentFailTest() throws Exception {
+    public void testUpdateDepartmentFail() throws Exception {
 
 
         DepartmentDTO departmentDTO = new DepartmentDTO();
@@ -147,7 +150,7 @@ public class DepartmentRestControllerTest {
     }
 
     @Test
-    public void setMinSalaryAndMaxSalaryTest() throws Exception {
+    public void testSetMinSalaryAndMaxSalary() throws Exception {
 
         DepartmentSalariesDTO departmentSalariesDTO = new DepartmentSalariesDTO();
         departmentSalariesDTO.setMinSalary(BigDecimal.valueOf(2000));
@@ -166,7 +169,7 @@ public class DepartmentRestControllerTest {
     }
 
     @Test
-    public void setMinSalaryAndMaxSalaryFailTest() throws Exception {
+    public void testSetMinSalaryAndMaxSalaryFail() throws Exception {
 
         DepartmentSalariesDTO departmentSalariesDTO = new DepartmentSalariesDTO();
         departmentSalariesDTO.setMinSalary(BigDecimal.valueOf(-2000));
@@ -181,13 +184,13 @@ public class DepartmentRestControllerTest {
     }
 
     @Test
-    public void deleteDepartmentWithNoPermissionTest() throws Exception {
+    public void testDeleteDepartmentWithNoPermission() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/departments/{id}", 1))
                 .andExpect(status().isConflict());
     }
 
     @Test
-    public void deleteDepartmentWithPermissionTest() throws Exception {
+    public void testDeleteDepartmentWithPermission() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/departments/{id}", 2))
                 .andExpect(status().isNoContent());
     }

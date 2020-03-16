@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import javax.sql.DataSource;
 
 @Configuration
@@ -22,15 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private DataSource dataSource;
 
-
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     @Autowired
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(@Lazy DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
     @Autowired
     public void setbCryptPasswordEncoder(@Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;

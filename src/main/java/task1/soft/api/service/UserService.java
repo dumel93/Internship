@@ -1,11 +1,14 @@
 package task1.soft.api.service;
 
 import task1.soft.api.dto.EmployeeDTO;
+import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+import task1.soft.api.validation.FieldValueExists;
+
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends FieldValueExists {
 
     User setupCEO();
 
@@ -15,7 +18,7 @@ public interface UserService {
 
     List<User> findAllEmployees();
 
-    void updateEmployee(EmployeeDTO EmployeeDTO);
+    User updateEmployee(EmployeeDTO EmployeeDTO);
 
     void createRoles();
 
@@ -31,4 +34,12 @@ public interface UserService {
 
     boolean isUserInHeadDepart(User user, Department headDepartment);
 
+    EmployeeReadDTO getDataFromEmployeeReadDTO(EmployeeReadDTO employee);
+
+    void setHead(EmployeeDTO employeeDTO, User user, Department department);
+
+    void setActivity(User employee);
+
+    void setPhones(EmployeeDTO employeeDTO, User user);
 }
+

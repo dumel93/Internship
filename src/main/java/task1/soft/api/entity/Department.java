@@ -2,6 +2,7 @@ package task1.soft.api.entity;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;

@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +43,12 @@ class RestErrorHandler {
         List<FieldError> fieldErrors = result.getFieldErrors();
 
         return processFieldErrors(fieldErrors);
+    }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Error processValidationError(UnsupportedOperationException ex) {
+        return new Error(ex.getMessage());
     }
 
     private ValidationErrorDTO processFieldErrors(List<FieldError> fieldErrors) {

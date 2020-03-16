@@ -1,44 +1,39 @@
 package task1.soft.api.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
-import task1.soft.api.entity.Phone;
+import org.hibernate.validator.constraints.NotEmpty;
+import task1.soft.api.service.UserService;
+import task1.soft.api.validation.Unique;
 
-import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
-
+import java.util.List;
 
 @Data
 public class EmployeeDTO {
 
     private Long id;
 
-    @NotNull
+    @NotEmpty
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotNull
+    @NotEmpty
     @JsonProperty("last_name")
     private String lastName;
 
-    private boolean active;
+    private List<PhoneDTO> phones;
 
-    private Set<Phone> phones;
-
-    @NotNull
+    @NotEmpty
     @Email
-    @Column(unique = true)
+    @Unique(service = UserService.class, fieldName = "email")
     private String email;
 
-    @NotNull
+    @NotEmpty
     @Length(min = 6)
     @JsonProperty("password")
     private String password;
@@ -49,15 +44,10 @@ public class EmployeeDTO {
 
     private boolean isHead;
 
+    private boolean isActive;
+
+    @NotNull
     @JsonProperty("department_id")
     private Long departmentId;
-
-
-    @JsonProperty("created_date")
-    private LocalDate dateOfEmployment=LocalDate.now();
-
-    @JsonProperty("last_login_time")
-    private LocalDateTime lastLoginTime;
-
 
 }

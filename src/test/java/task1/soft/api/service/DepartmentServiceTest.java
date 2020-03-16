@@ -15,10 +15,12 @@ import task1.soft.api.entity.User;
 import task1.soft.api.exception.NoDeletePermissionException;
 import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.repo.DepartmentRepository;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -36,13 +38,13 @@ public class DepartmentServiceTest {
     private DepartmentService departmentService = new DepartmentServiceImpl(departmentRepository, modelMapper);
 
     @Test
-    public void createDepartment() {
+    public void testCreateDepartment() {
         //	given
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setName("it");
         departmentDTO.setCity("rzeszow");
 
-        Department department= new Department();
+        Department department = new Department();
         department.setName(departmentDTO.getName());
         department.setCity(departmentDTO.getCity());
 
@@ -55,17 +57,16 @@ public class DepartmentServiceTest {
     }
 
     @Test
-    public void updateDepartment() {
-
+    public void testUpdateDepartment() {
+        //	given
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setId(1L);
         departmentDTO.setName("it");
         departmentDTO.setCity("rzeszow");
-
-        Department department= new Department();
+        Department department = new Department();
+        department.setName("it");
+        department.setCity("rzeszow");
         department.setId(departmentDTO.getId());
-        department.setName(departmentDTO.getName());
-        department.setCity(departmentDTO.getCity());
 
         when(departmentRepository.findOne(1L)).thenReturn(department);
         // 	when
@@ -78,25 +79,25 @@ public class DepartmentServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void updateDepartmentFail() {
+    public void testUpdateDepartmentFail() {
         //	given
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setName("it");
         departmentDTO.setCity("rzeszow");
+        Department department = new Department();
+        department.setName("it");
+        department.setCity("rzeszow");
 
-        Department department= new Department();
-        department.setName(departmentDTO.getName());
-        department.setCity(departmentDTO.getCity());
-        departmentDTO.setName("test");
         when(departmentRepository.findOne(3L)).thenThrow(NotFoundException.class);
         // 	when
+        departmentDTO.setName("test");
         departmentService.updateDepartment(departmentDTO);
 
 
     }
 
     @Test
-    public void findOneDepartment() {
+    public void testFindOneDepartment() {
         //	given
         Department department = new Department();
         department.setName("it");
@@ -111,7 +112,7 @@ public class DepartmentServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void findOneDepartmentFail() {
+    public void testFindOneDepartmentFail() {
         //	given
         when(departmentRepository.findOne(3L)).thenThrow(new NotFoundException("There is no Department with id: " + 3));
         // 	when
@@ -119,7 +120,7 @@ public class DepartmentServiceTest {
     }
 
     @Test
-    public void deleteDepartmentWithoutEmployees() {
+    public void testDeleteDepartmentWithoutEmployees() {
         //given
         Department department = new Department();
         department.setName("it");
@@ -136,7 +137,7 @@ public class DepartmentServiceTest {
     }
 
     @Test(expected = NoDeletePermissionException.class)
-    public void deleteDepartmentWithEmployees() {
+    public void testDeleteDepartmentWithEmployees() {
         Department department = new Department();
         department.setName("it");
         department.setCity("rzeszow");
@@ -158,7 +159,7 @@ public class DepartmentServiceTest {
 
 
     @Test
-    public void getAllDepartmentDetails() {
+    public void testGetAllDepartmentDetails() {
         //given
         Department department = new Department();
         department.setName("it");
@@ -190,7 +191,7 @@ public class DepartmentServiceTest {
         employeeReadDTO.setLastName("k2");
         employeeReadDTO.setEmail("i2@wp.pl");
         employeeReadDTO.setSalary(new BigDecimal("2000"));
-        employeeReadDTO.setDepartmentId(1L);
+        employeeReadDTO.setNameOfDepartment("it");
         employeeReadDTO.setId(1L);
 
         when(modelMapper.map(user2, EmployeeReadDTO.class)).thenReturn(employeeReadDTO);
@@ -206,7 +207,7 @@ public class DepartmentServiceTest {
     }
 
     @Test
-    public void calculateMedian() {
+    public void testCalculateMedian() {
         //given
         Department department = new Department();
         department.setName("it");
@@ -237,7 +238,7 @@ public class DepartmentServiceTest {
     }
 
     @Test
-    public void findAllDepartments() {
+    public void testFindAllDepartments() {
         //given
         Department department = new Department();
         department.setName("it");
@@ -257,8 +258,6 @@ public class DepartmentServiceTest {
         assertEquals(result.size(), 2);
         assertEquals(result.get(1), department2);
     }
-
-
 
 }
 

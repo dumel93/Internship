@@ -3,6 +3,7 @@ package task1.soft.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
