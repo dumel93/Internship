@@ -24,7 +24,7 @@ import java.util.List;
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts =
         {"classpath:cleanup.sql", "classpath:populate.sql"})
 public class UserRepositoryTest {
-    
+
 
     @Autowired
     private UserRepository userRepository;
