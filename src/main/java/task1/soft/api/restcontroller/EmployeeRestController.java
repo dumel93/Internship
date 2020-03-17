@@ -1,6 +1,7 @@
 package task1.soft.api.restcontroller;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -28,12 +29,12 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @Secured("ROLE_CEO")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(value = "/employees", produces = "application/json")
 public class EmployeeRestController {
 
-    private UserService userService;
-    private ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     // -------------------Get an Employee/s-------------------------------------------
     @Secured("ROLE_HEAD")

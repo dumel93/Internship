@@ -1,6 +1,7 @@
 package task1.soft.api.restcontroller;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -23,13 +24,13 @@ import java.util.stream.Collectors;
 
 @Secured("ROLE_CEO")
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/departments")
 public class DepartmentRestController {
 
-    private DepartmentService departmentService;
-    private ModelMapper modelMapper;
-    private UserService userService;
+    private final DepartmentService departmentService;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
 
     // -------------------getDepartments-------------------------------------------
     @Secured("ROLE_HEAD")
