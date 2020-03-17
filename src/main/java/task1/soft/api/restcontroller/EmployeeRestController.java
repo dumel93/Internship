@@ -1,10 +1,8 @@
 package task1.soft.api.restcontroller;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,24 +17,21 @@ import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.exception.NotFoundException;
 import task1.soft.api.service.UserService;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Validated
 @RestController
-@Slf4j
-@Secured("ROLE_CEO")
-@AllArgsConstructor
-@RequestMapping(value = "/employees", produces = "application/json")
+@RequiredArgsConstructor
+@RequestMapping(value = "/employees")
 public class EmployeeRestController {
 
-    private UserService userService;
-    private ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     // -------------------Get an Employee/s-------------------------------------------
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @GetMapping
     public List<EmployeeReadDTO> getAllEmployees(@AuthenticationPrincipal UserDetails auth) {
 
@@ -49,7 +44,7 @@ public class EmployeeRestController {
                 .collect(Collectors.toList());
     }
 
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO') or hasRole('ROLE_EMPLOYEE')")
     @GetMapping("/{id}")
     public EmployeeReadDTO getEmployeeById(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
@@ -59,17 +54,7 @@ public class EmployeeRestController {
     }
 
 
-    @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
-    @GetMapping("/me")
-    public EmployeeReadDTO getEmployee(@AuthenticationPrincipal UserDetails auth) throws NotFoundException {
-        User currentUser = userService.findByEmail(auth.getUsername());
-        userService.setLoginTime(currentUser.getId());
-        EmployeeReadDTO employeeReadDTO = modelMapper.map(currentUser, EmployeeReadDTO.class);
-        return userService.getDataFromEmployeeReadDTO(employeeReadDTO);
-    }
-
-    @PreAuthorize(value = "!hasRole('CEO')")
-    @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
+    @PreAuthorize("(hasRole('ROLE_HEAD') or hasRole('ROLE_EMPLOYEE')) and !hasRole('ROLE_CEO')")
     @GetMapping("/departments")
     public List<EmployeeReadDTO> findAllEmployeesOfDepartment(@AuthenticationPrincipal UserDetails auth) {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
@@ -83,7 +68,7 @@ public class EmployeeRestController {
 
     }
 
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @GetMapping("/departments/{id}")
     public List<EmployeeReadDTO> findEmployeesOfDepartment(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) {
 
@@ -96,7 +81,7 @@ public class EmployeeRestController {
     }
 
     // -------------------Create an Employee-------------------------------------------
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public EmployeeReadDTO createEmployee(@AuthenticationPrincipal UserDetails auth,
@@ -118,13 +103,11 @@ public class EmployeeRestController {
 
         return modelMapper.map(employeeDTO, EmployeeReadDTO.class);
 
-
     }
-
 
     // -------------------Update an Employee-------------------------------------------
 
-    @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO') or hasRole('ROLE_EMPLOYEE')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
     public EmployeeReadDTO updateEmployee(@AuthenticationPrincipal UserDetails auth,
@@ -136,29 +119,13 @@ public class EmployeeRestController {
         User employee = userService.findEmployee(id);
         User currentUser = userService.findByEmail(auth.getUsername());
         employeeDTO.setId(id);
-        if (request.isUserInRole("ROLE_CEO") && id != 1) {
+        if (request.isUserInRole("ROLE_CEO") ||
+                (request.isUserInRole("ROLE_HEAD") && userService.isUserInHeadDepart(employee, currentUser.getDepartment())) ||
+                (request.isUserInRole("ROLE_EMPLOYEE") && id.equals(currentUser.getId()))) {
             userService.updateEmployee(employeeDTO);
         }
-        if (request.isUserInRole("ROLE_HEAD") && id != 1) {
-            if (userService.isUserInHeadDepart(employee, currentUser.getDepartment())) {
-                userService.updateEmployee(employeeDTO);
-            }
-        }
+
         return modelMapper.map(employeeDTO, EmployeeReadDTO.class);
-
-    }
-
-    @Secured({"ROLE_HEAD", "ROLE_EMPLOYEE"})
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/me")
-    public EmployeeReadDTO updateAuthEmployee(@AuthenticationPrincipal UserDetails auth,
-                                              @Valid @RequestBody EmployeeDTO employeeDTO) {
-
-        userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        User currentUser = userService.findByEmail(auth.getUsername());
-        employeeDTO.setId(currentUser.getId());
-        User userAfterUpdate = userService.updateEmployee(employeeDTO);
-        return modelMapper.map(userAfterUpdate, EmployeeReadDTO.class);
 
     }
 
@@ -169,19 +136,16 @@ public class EmployeeRestController {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = userService.findEmployee(id);
-        if (id != 1) {
+        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        employeeDTO.setHead(true);
+        userService.setHead(employeeDTO, employee, employee.getDepartment());
+        User userUpdated = userService.updateEmployee(employeeDTO);
+        return modelMapper.map(userUpdated, EmployeeReadDTO.class);
 
-            EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
-            employeeDTO.setHead(true);
-            userService.setHead(employeeDTO, employee, employee.getDepartment());
-            User userUpdated = userService.updateEmployee(employeeDTO);
-            return modelMapper.map(userUpdated, EmployeeReadDTO.class);
-        }
-        return modelMapper.map(employee, EmployeeReadDTO.class);
 
     }
 
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@AuthenticationPrincipal UserDetails auth,
@@ -195,18 +159,13 @@ public class EmployeeRestController {
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
         User currentUser = userService.findByEmail(auth.getUsername());
 
-        if (request.isUserInRole("ROLE_CEO") && id != 1) {
+        if (request.isUserInRole("ROLE_CEO") || (request.isUserInRole("ROLE_HEAD") && userService.isUserInHeadDepart(employee, currentUser.getDepartment()))) {
             userService.updateEmployee(employeeDTO);
-        }
-        if (request.isUserInRole("ROLE_HEAD") && id != 1) {
-            if (userService.isUserInHeadDepart(employee, currentUser.getDepartment())) {
-                userService.updateEmployee(employeeDTO);
-            }
         }
 
     }
 
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/salary")
     public EmployeeReadDTO setSalary(@AuthenticationPrincipal UserDetails auth,
@@ -221,20 +180,14 @@ public class EmployeeRestController {
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
         User currentUser = userService.findByEmail(auth.getUsername());
 
-        if (request.isUserInRole("ROLE_CEO") && id != 1) {
+        if (request.isUserInRole("ROLE_CEO") || (request.isUserInRole("ROLE_HEAD") && userService.isUserInHeadDepart(employee, currentUser.getDepartment()))) {
             userService.updateEmployee(employeeDTO);
-        }
-        if (request.isUserInRole("ROLE_HEAD") && id != 1) {
-            if (userService.isUserInHeadDepart(employee, currentUser.getDepartment())) {
-                userService.updateEmployee(employeeDTO);
-            }
         }
         return modelMapper.map(employee, EmployeeReadDTO.class);
 
-
     }
 
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/active")
     public EmployeeReadDTO disable(@AuthenticationPrincipal UserDetails auth,
@@ -251,22 +204,15 @@ public class EmployeeRestController {
         userService.setActivity(employee);
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
         User currentUser = userService.findByEmail(auth.getUsername());
-        if (request.isUserInRole("ROLE_CEO") && id != 1) {
-            User userUpdated = userService.updateEmployee(employeeDTO);
-            return modelMapper.map(userUpdated, EmployeeReadDTO.class);
-        }
-        if (request.isUserInRole("ROLE_HEAD") && id != 1) {
-            if (userService.isUserInHeadDepart(employee, currentUser.getDepartment())) {
-                User userUpdated = userService.updateEmployee(employeeDTO);
-                return modelMapper.map(userUpdated, EmployeeReadDTO.class);
-            }
+        if (request.isUserInRole("ROLE_CEO") || (request.isUserInRole("ROLE_HEAD") && userService.isUserInHeadDepart(employee, currentUser.getDepartment()))) {
+            userService.updateEmployee(employeeDTO);
         }
         return modelMapper.map(employee, EmployeeReadDTO.class);
 
     }
 
     // -------------------Delete an Employee-------------------------------------------
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id,
@@ -276,13 +222,8 @@ public class EmployeeRestController {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         User employee = userService.findEmployee(id);
         User currentUser = userService.findByEmail(auth.getUsername());
-        if (request.isUserInRole("ROLE_CEO") && id != 1) {
+        if (request.isUserInRole("ROLE_CEO") || (request.isUserInRole("ROLE_HEAD") && userService.isUserInHeadDepart(employee, currentUser.getDepartment()))) {
             userService.deleteEmployee(employee);
-        }
-        if (request.isUserInRole("ROLE_HEAD") && id != 1) {
-            if (userService.isUserInHeadDepart(employee, currentUser.getDepartment())) {
-                userService.deleteEmployee(employee);
-            }
         }
 
     }

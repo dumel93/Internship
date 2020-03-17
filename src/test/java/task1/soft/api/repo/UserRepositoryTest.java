@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -54,5 +53,12 @@ public class UserRepositoryTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formatDateTime = lastLoginTime.format(formatter);
         Assert.assertEquals(formatDateTime, LocalDateTime.now().format(formatter));
+    }
+
+    @Test
+    public void existsByEmail() {
+
+        Assert.assertTrue(userRepository.existsByEmail("ceo@pgs.com"));
+        Assert.assertFalse(userRepository.existsByEmail("test@onet.pl"));
     }
 }

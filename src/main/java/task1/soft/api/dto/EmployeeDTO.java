@@ -42,9 +42,12 @@ public class EmployeeDTO {
     @NotNull
     private BigDecimal salary;
 
-    private boolean isHead;
 
+    @JsonProperty("is_active")
     private boolean isActive;
+
+    @JsonProperty("is_head")
+    private boolean isHead;
 
     @NotNull
     @JsonProperty("department_id")

@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 
-@EqualsAndHashCode(callSuper = true)
+
 @Data
 @AllArgsConstructor
 public class NotFoundException extends RuntimeException {
