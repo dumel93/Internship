@@ -1,6 +1,7 @@
 package task1.soft.api.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import task1.soft.api.repo.RoleRepository;
 import task1.soft.api.repo.UserRepository;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,33 +36,6 @@ public class UserServiceImpl implements UserService {
 
     private ModelMapper modelMapper;
 
-    @Override
-    public User setupCEO() {
-        User ceo = new User();
-        ceo.setFirstName("admin");
-        ceo.setLastName("admin");
-        ceo.setEmail("ceo@pgs.com");
-        ceo.setSalary(new BigDecimal("20000"));
-        ceo.setActive(true);
-        ceo.setPassword(passwordEncoder.encode("admin123"));
-        Role userRole = roleRepository.findByName("ROLE_CEO");
-        ceo.setRoles(new HashSet<>(Collections.singletonList(userRole)));
-        Set<Phone> phones = new HashSet<>();
-        Phone phone = new Phone();
-        phone.setNumber("533-202-020");
-        phone.setType(PhoneType.BUSINESS);
-        phone.setUser(ceo);
-        Phone phone2 = new Phone();
-        phone2.setNumber("507-201-020");
-        phone2.setType(PhoneType.PRIVATE);
-        phone2.setUser(ceo);
-        phones.add(phone);
-        phones.add(phone2);
-        phoneRepository.save(phones);
-        userRepository.save(ceo);
-        return ceo;
-
-    }
 
     @Override
     public User findEmployee(Long id) throws NotFoundException {
@@ -181,19 +154,6 @@ public class UserServiceImpl implements UserService {
             }
 
         }
-    }
-
-    @Override
-    public void createRoles() {
-        Role r1 = new Role();
-        r1.setName("ROLE_CEO");
-        Role r2 = new Role();
-        r2.setName("ROLE_HEAD");
-        Role r3 = new Role();
-        r3.setName("ROLE_EMPLOYEE");
-        roleRepository.save(r1);
-        roleRepository.save(r2);
-        roleRepository.save(r3);
     }
 
     @Override

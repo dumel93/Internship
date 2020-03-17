@@ -1,9 +1,11 @@
 package task1.soft.api.restcontroller;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -21,34 +23,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Secured("ROLE_CEO")
+
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/departments")
 public class DepartmentRestController {
 
-    private DepartmentService departmentService;
-    private ModelMapper modelMapper;
-    private UserService userService;
+    private final DepartmentService departmentService;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
 
     // -------------------getDepartments-------------------------------------------
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<DepartmentDTO> getDepartments(@AuthenticationPrincipal UserDetails auth) {
 
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
-        List<Department> departments;
-        departments = departmentService.findAllDepartments();
+        List<Department> departments = departmentService.findAllDepartments();
         return departments.stream()
                 .map(department -> modelMapper.map(department, DepartmentDTO.class))
                 .map(department -> departmentService.getAllDepartmentDetails(department.getId()))
                 .collect(Collectors.toList());
-
     }
 
-
-    @Secured("ROLE_HEAD")
+    @PreAuthorize("hasRole('ROLE_HEAD') or hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public DepartmentDTO getDepartment(@PathVariable("id") Long id,
@@ -60,6 +59,8 @@ public class DepartmentRestController {
     }
 
     // -------------------createDepartment-------------------------------------------
+
+    @PreAuthorize("hasRole('ROLE_CEO')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DepartmentDTO createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @AuthenticationPrincipal UserDetails auth) {
@@ -70,6 +71,7 @@ public class DepartmentRestController {
     }
 
     // -------------------UpdateDepartment-------------------------------------------
+    @PreAuthorize("hasRole('ROLE_CEO')")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public DepartmentDTO updateDepartment(@Valid @RequestBody DepartmentDTO departmentDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
@@ -82,7 +84,7 @@ public class DepartmentRestController {
 
     }
 
-
+    @PreAuthorize("hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/salary")
     public DepartmentDTO setMinSalaryAndMaxSalary(@Valid @RequestBody DepartmentSalariesDTO departmentSalariesDTO, @PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException {
@@ -98,9 +100,10 @@ public class DepartmentRestController {
     }
 
     // -------------------deleteDepartment-------------------------------------------
+    @PreAuthorize("hasRole('ROLE_CEO')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    void deleteDepartment(@PathVariable @Min(value = 1, message = "must be greater than or equal to 1") Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException, NoDeletePermissionException {
+    void deleteDepartment(@PathVariable Long id, @AuthenticationPrincipal UserDetails auth) throws NotFoundException, NoDeletePermissionException {
         userService.setLoginTime(userService.findByEmail(auth.getUsername()).getId());
         departmentService.deleteDepartment(id);
     }

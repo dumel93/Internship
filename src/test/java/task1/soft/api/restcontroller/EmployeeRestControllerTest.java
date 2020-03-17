@@ -46,17 +46,17 @@ public class EmployeeRestControllerTest {
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[0].email", is("ceo@pgs.com")))
-                .andExpect(jsonPath("$[0].salary", is(20000)))
+                .andExpect(jsonPath("$[0].salary", is(20000.0)))
                 .andExpect(jsonPath("$[0].first_name", is("admin")))
                 .andExpect(jsonPath("$[0].last_name", is("admin")))
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andExpect(jsonPath("$[1].email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$[1].salary", is(2000)))
+                .andExpect(jsonPath("$[1].salary", is(2000.0)))
                 .andExpect(jsonPath("$[1].first_name", is("damian")))
                 .andExpect(jsonPath("$[1].last_name", is("krawczyk")))
                 .andExpect(jsonPath("$[2].id", is(3)))
                 .andExpect(jsonPath("$[2].email", is("adrian@pgs.com")))
-                .andExpect(jsonPath("$[2].salary", is(3000)))
+                .andExpect(jsonPath("$[2].salary", is(3000.0)))
                 .andExpect(jsonPath("$[2].first_name", is("adrian")))
                 .andExpect(jsonPath("$[2].last_name", is("strzepek")));
 
@@ -71,28 +71,13 @@ public class EmployeeRestControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.email", is("ceo@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(20000)))
+                .andExpect(jsonPath("$.salary", is(20000.0)))
                 .andExpect(jsonPath("$.first_name", is("admin")))
                 .andExpect(jsonPath("$.last_name", is("admin")));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/employees/{id}", 4L))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
-
-    }
-
-    @Test
-    @WithMockUser(username = "damian@pgs.com", password = "user123", roles = "EMPLOYEE")
-    public void testGetEmployee() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/employees/me"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.id", is(2)))
-                .andExpect(jsonPath("$.email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(2000)))
-                .andExpect(jsonPath("$.first_name", is("damian")))
-                .andExpect(jsonPath("$.last_name", is("krawczyk")));
-
 
     }
 
@@ -105,12 +90,12 @@ public class EmployeeRestControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(2)))
                 .andExpect(jsonPath("$[0].email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$[0].salary", is(2000)))
+                .andExpect(jsonPath("$[0].salary", is(2000.0)))
                 .andExpect(jsonPath("$[0].first_name", is("damian")))
                 .andExpect(jsonPath("$[0].last_name", is("krawczyk")))
                 .andExpect(jsonPath("$[1].id", is(3)))
                 .andExpect(jsonPath("$[1].email", is("adrian@pgs.com")))
-                .andExpect(jsonPath("$[1].salary", is(3000)))
+                .andExpect(jsonPath("$[1].salary", is(3000.0)))
                 .andExpect(jsonPath("$[1].first_name", is("adrian")))
                 .andExpect(jsonPath("$[1].last_name", is("strzepek")));
 
@@ -124,12 +109,12 @@ public class EmployeeRestControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(2)))
                 .andExpect(jsonPath("$[0].email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$[0].salary", is(2000)))
+                .andExpect(jsonPath("$[0].salary", is(2000.0)))
                 .andExpect(jsonPath("$[0].first_name", is("damian")))
                 .andExpect(jsonPath("$[0].last_name", is("krawczyk")))
                 .andExpect(jsonPath("$[1].id", is(3)))
                 .andExpect(jsonPath("$[1].email", is("adrian@pgs.com")))
-                .andExpect(jsonPath("$[1].salary", is(3000)))
+                .andExpect(jsonPath("$[1].salary", is(3000.0)))
                 .andExpect(jsonPath("$[1].first_name", is("adrian")))
                 .andExpect(jsonPath("$[1].last_name", is("strzepek")));
 
@@ -150,7 +135,7 @@ public class EmployeeRestControllerTest {
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setPassword("user123");
-        employeeDTO.setSalary(BigDecimal.valueOf(2000));
+        employeeDTO.setSalary(BigDecimal.valueOf(2000.0));
         employeeDTO.setFirstName("marcin");
         employeeDTO.setLastName("kawalec");
         employeeDTO.setEmail("test@pgs.com");
@@ -163,7 +148,7 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(4)))
                 .andExpect(jsonPath("$.email", is("test@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(2000)))
+                .andExpect(jsonPath("$.salary", is(2000.0)))
                 .andExpect(jsonPath("$.first_name", is("marcin")))
                 .andExpect(jsonPath("$.last_name", is("kawalec")));
 
@@ -179,7 +164,7 @@ public class EmployeeRestControllerTest {
     public void testCreateEmployeeEmailExists() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setPassword("user123");
-        employeeDTO.setSalary(BigDecimal.valueOf(2000));
+        employeeDTO.setSalary(BigDecimal.valueOf(2000.0));
         employeeDTO.setFirstName("damian");
         employeeDTO.setLastName("krawczyk");
         employeeDTO.setEmail("damian@pgs.com");
@@ -226,30 +211,6 @@ public class EmployeeRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "damian@pgs.com", password = "user123", roles = "EMPLOYEE")
-    public void testUpdateAuthEmployee() throws Exception {
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setPassword("user123");
-        employeeDTO.setSalary(BigDecimal.valueOf(2000));
-        employeeDTO.setFirstName("test");
-        employeeDTO.setLastName("test");
-        employeeDTO.setEmail("test2@pgs.com");
-        employeeDTO.setDepartmentId(1L);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/employees/me")
-                .content(asJsonString(employeeDTO))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(2)))
-                .andExpect(jsonPath("$.email", is("test2@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(2000)))
-                .andExpect(jsonPath("$.first_name", is("test")))
-                .andExpect(jsonPath("$.last_name", is("test")));
-
-    }
-
-    @Test
     public void testSetHead() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.put("/employees/departments/head/{id}", 2L)
@@ -258,7 +219,7 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(2)))
                 .andExpect(jsonPath("$.email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(2000)))
+                .andExpect(jsonPath("$.salary", is(2000.0)))
                 .andExpect(jsonPath("$.first_name", is("damian")))
                 .andExpect(jsonPath("$.last_name", is("krawczyk")))
                 .andExpect(jsonPath("$.is_head", is(true)));
@@ -304,7 +265,7 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(2)))
                 .andExpect(jsonPath("$.email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(1000)))
+                .andExpect(jsonPath("$.salary", is(1000.0)))
                 .andExpect(jsonPath("$.first_name", is("damian")))
                 .andExpect(jsonPath("$.last_name", is("krawczyk")));
 
@@ -317,11 +278,11 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(2)))
                 .andExpect(jsonPath("$.email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(5000)))
+                .andExpect(jsonPath("$.salary", is(5000.0)))
                 .andExpect(jsonPath("$.first_name", is("damian")))
                 .andExpect(jsonPath("$.last_name", is("krawczyk")));
 
-        employeeSalaryDTO.setSalary(BigDecimal.valueOf(3000));
+        employeeSalaryDTO.setSalary(BigDecimal.valueOf(3000.0));
         mockMvc.perform(MockMvcRequestBuilders.put("/employees/{id}/salary", 2L)
                 .content(asJsonString(employeeSalaryDTO))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -329,11 +290,11 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(2)))
                 .andExpect(jsonPath("$.email", is("damian@pgs.com")))
-                .andExpect(jsonPath("$.salary", is(3000)))
+                .andExpect(jsonPath("$.salary", is(3000.0)))
                 .andExpect(jsonPath("$.first_name", is("damian")))
                 .andExpect(jsonPath("$.last_name", is("krawczyk")));
 
-        employeeSalaryDTO.setSalary(BigDecimal.valueOf(3000));
+        employeeSalaryDTO.setSalary(BigDecimal.valueOf(3000.0));
         mockMvc.perform(MockMvcRequestBuilders.put("/employees/{id}/salary", 10L)
                 .content(asJsonString(employeeSalaryDTO))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -364,7 +325,6 @@ public class EmployeeRestControllerTest {
                 .andExpect(status().isNoContent());
 
     }
-
 
     private static String asJsonString(final Object obj) {
         try {

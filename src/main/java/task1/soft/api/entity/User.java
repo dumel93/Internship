@@ -58,7 +58,7 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @Column
+    @Column(name = "is_head")
     private boolean isHead;
 
     @Column

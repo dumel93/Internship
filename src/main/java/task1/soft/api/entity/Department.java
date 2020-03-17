@@ -1,6 +1,7 @@
 package task1.soft.api.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -30,12 +31,13 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = {CascadeType.ALL})
     private List<User> employees = new ArrayList<>();
 
-    @Column
+    @Column(name = "min_salary")
     @Min(value = 0,message = "must be a positive number")
     private BigDecimal minSalary;
 
-    @Column
+    @Column(name = "max_salary")
     @Min(value = 0,message = "must be a positive number")
     private BigDecimal maxSalary;
+
 
 }

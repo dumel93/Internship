@@ -48,17 +48,13 @@ class RestErrorHandler {
     @ExceptionHandler(UnsupportedOperationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Error processValidationError(UnsupportedOperationException ex) {
+
         return new Error(ex.getMessage());
     }
 
     private ValidationErrorDTO processFieldErrors(List<FieldError> fieldErrors) {
         ValidationErrorDTO dto = new ValidationErrorDTO();
-
-        for (FieldError fieldError : fieldErrors) {
-            String localizedErrorMessage = resolveLocalizedErrorMessage(fieldError);
-            dto.addFieldError(fieldError.getField(), localizedErrorMessage);
-        }
-
+        fieldErrors.forEach(fieldError -> dto.addFieldError(fieldError.getField(), resolveLocalizedErrorMessage(fieldError)));
         return dto;
     }
 
