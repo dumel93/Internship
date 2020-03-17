@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -57,7 +58,7 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @Column
+    @Column(name = "is_head")
     private boolean isHead;
 
     @Column

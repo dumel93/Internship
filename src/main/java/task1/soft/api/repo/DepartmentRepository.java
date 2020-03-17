@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
+
 import java.math.BigDecimal;
 
 

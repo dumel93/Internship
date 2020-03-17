@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 import task1.soft.api.service.UserService;
 import task1.soft.api.validation.Unique;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -41,9 +42,12 @@ public class EmployeeDTO {
     @NotNull
     private BigDecimal salary;
 
-    private boolean isHead;
 
+    @JsonProperty("is_active")
     private boolean isActive;
+
+    @JsonProperty("is_head")
+    private boolean isHead;
 
     @NotNull
     @JsonProperty("department_id")

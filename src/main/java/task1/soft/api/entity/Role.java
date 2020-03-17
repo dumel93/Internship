@@ -1,6 +1,7 @@
 package task1.soft.api.entity;
 
 import lombok.Data;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -8,7 +9,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @Table(name = "roles")
 public class Role {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

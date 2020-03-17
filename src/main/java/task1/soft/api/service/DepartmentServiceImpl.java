@@ -1,5 +1,6 @@
 package task1.soft.api.service;
 
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -27,25 +28,17 @@ public class DepartmentServiceImpl implements DepartmentService {
     private ModelMapper modelMapper;
 
     public Department createDepartment(DepartmentDTO departmentDTO) {
-        Department department = new Department();
-        department.setName(departmentDTO.getName());
-        department.setCity(departmentDTO.getCity());
-        department.setMinSalary(departmentDTO.getMinSalary());
-        department.setMaxSalary(departmentDTO.getMaxSalary());
+        Department department = modelMapper.map(departmentDTO, Department.class);
         departmentRepository.save(department);
         return department;
     }
 
     @Override
     public Department updateDepartment(DepartmentDTO departmentDTO) {
-        Department departmentUpgrade = findDepartment(departmentDTO.getId());
-        departmentUpgrade.setId(departmentDTO.getId());
-        departmentUpgrade.setName(departmentDTO.getName());
-        departmentUpgrade.setCity(departmentDTO.getCity());
-        departmentUpgrade.setMinSalary(departmentDTO.getMinSalary());
-        departmentUpgrade.setMaxSalary(departmentDTO.getMaxSalary());
-        departmentRepository.save(departmentUpgrade);
-        return departmentUpgrade;
+        Department department = modelMapper.map(departmentDTO, Department.class);
+        department.setId(departmentDTO.getId());
+        departmentRepository.save(department);
+        return department;
     }
 
     @Override
@@ -69,14 +62,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentDTO getAllDepartmentDetails(Long idDepart) {
         Department department = this.findDepartment(idDepart);
-        DepartmentDTO departmentDTO = new DepartmentDTO();
-        departmentDTO.setId(idDepart);
-        departmentDTO.setName(department.getName());
-        departmentDTO.setCity(department.getCity());
-        departmentDTO.setMaxSalary(department.getMaxSalary());
-        departmentDTO.setMinSalary(department.getMinSalary());
+        DepartmentDTO departmentDTO = modelMapper.map(department, DepartmentDTO.class);
         departmentDTO.setNumberOfEmployees(departmentRepository.countEmployeesByIdDepart(idDepart));
-
         departmentDTO.setAverageSalary(departmentRepository.countAverageSalaries(idDepart));
         if (departmentDTO.getNumberOfEmployees() == 0) {
             departmentDTO.setAverageSalary(BigDecimal.valueOf(0));

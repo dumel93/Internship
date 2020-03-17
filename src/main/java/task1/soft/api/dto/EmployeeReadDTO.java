@@ -1,11 +1,11 @@
 package task1.soft.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
+import lombok.ToString;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.validator.constraints.Email;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -13,9 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class EmployeeReadDTO {
 
     private Long id;
@@ -57,24 +55,8 @@ public class EmployeeReadDTO {
 
     private List<PhoneDTO> phones;
 
+    @ToString.Exclude
     @JsonProperty("department_head_profile")
     private EmployeeReadDTO departmentHeadProfile;
 
-    @Override
-    public String toString() {
-        return "EmployeeReadDTO{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", salary=" + salary +
-                ", nameOfDepartment='" + nameOfDepartment + '\'' +
-                ", departmentId=" + departmentId +
-                ", isActive=" + isActive +
-                ", isHead=" + isHead +
-                ", dateOfEmployment=" + dateOfEmployment +
-                ", lastLoginTime=" + lastLoginTime +
-                ", phones=" + phones +
-                '}';
-    }
 }

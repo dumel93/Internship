@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import task1.soft.api.entity.User;
+
 import java.math.BigDecimal;
 
 @RunWith(SpringRunner.class)

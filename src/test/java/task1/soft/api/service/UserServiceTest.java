@@ -46,46 +46,6 @@ public class UserServiceTest {
 
 
     @Test
-    public void testSetupCEO() {
-        //	given
-
-        User ceo = new User();
-        ceo.setFirstName("admin");
-        ceo.setLastName("admin");
-        ceo.setEmail("ceo@pgs.com");
-        ceo.setSalary(new BigDecimal("20000"));
-        ceo.setActive(true);
-        Role userRole = new Role();
-        Set<Role> roleSet = new HashSet<>();
-        roleSet.add(userRole);
-        userRole.setName("ROLE_CEO");
-        ceo.setRoles(roleSet);
-        ceo.setPassword("$2a$10$qSsKGiXLCQnHwuczS/M.HuOaNteaFpDT6rzCAfOXdDIbgu8ta4CFe");
-        Set<Phone> phones = new HashSet<>();
-        Phone phone = new Phone();
-        phone.setNumber("533-202-020");
-        phone.setType(PhoneType.BUSINESS);
-        phone.setUser(ceo);
-        phones.add(phone);
-
-        when(passwordEncoder.encode("admin123")).thenReturn("$2a$10$qSsKGiXLCQnHwuczS/M.HuOaNteaFpDT6rzCAfOXdDIbgu8ta4CFe");
-        when(roleRepository.findByName("ROLE_CEO")).thenReturn(userRole);
-        when(userRepository.save(ceo)).thenReturn(ceo);
-        when(phoneRepository.save(phone)).thenReturn(phone);
-        // 	when
-
-        User result = userService.setupCEO();
-        // 	then
-        assertNotNull(result);
-        assertEquals(result, ceo);
-        assertEquals(ceo.getFirstName(), result.getFirstName());
-        assertEquals(ceo.getPassword(), result.getPassword());
-        assertEquals(ceo.getSalary(), result.getSalary());
-        assertEquals(ceo.getId(), result.getId());
-
-    }
-
-    @Test
     public void testFindEmployee() {
         //	given
         User user = new User();
@@ -232,29 +192,6 @@ public class UserServiceTest {
 
     }
 
-    @Test
-    public void testCreateRoles() {
-
-        Role role1 = new Role();
-        role1.setName("ROLE_CEO");
-        Role role2 = new Role();
-        role2.setName("ROLE_HEAD");
-        Role role3 = new Role();
-        role3.setName("ROLE_EMPLOYEE");
-
-        when(roleRepository.save(role1)).thenReturn(role1);
-        when(roleRepository.save(role2)).thenReturn(role2);
-        when(roleRepository.save(role3)).thenReturn(role3);
-
-        // 	when
-        userService.createRoles();
-        // 	then
-        verify(roleRepository, times(1)).save(role1);
-        verify(roleRepository, times(1)).save(role2);
-        verify(roleRepository, times(1)).save(role3);
-
-
-    }
 
     @Test
     public void testCreateEmployee() {

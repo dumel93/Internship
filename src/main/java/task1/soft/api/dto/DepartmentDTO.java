@@ -3,6 +3,7 @@ package task1.soft.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
@@ -22,7 +23,7 @@ public class DepartmentDTO {
     @JsonProperty("min_salary")
     private BigDecimal minSalary;
 
-    @Min(value = 0,message = "must be a positive number")
+    @Min(value = 0)
     @JsonProperty("max_salary")
     private BigDecimal maxSalary;
 

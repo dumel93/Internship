@@ -5,11 +5,11 @@ import task1.soft.api.dto.EmployeeReadDTO;
 import task1.soft.api.entity.Department;
 import task1.soft.api.entity.User;
 import task1.soft.api.validation.FieldValueExists;
+
 import java.util.List;
 
 public interface UserService extends FieldValueExists {
 
-    User setupCEO();
 
     User findEmployee(Long id);
 
@@ -18,8 +18,6 @@ public interface UserService extends FieldValueExists {
     List<User> findAllEmployees();
 
     User updateEmployee(EmployeeDTO EmployeeDTO);
-
-    void createRoles();
 
     User createEmployee(EmployeeDTO employeeDTO);
 
