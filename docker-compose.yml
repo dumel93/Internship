@@ -1,0 +1,18 @@
+version: '3'
+services:
+  api:
+    build: '.'
+    ports:
+    - "9090:9090"
+    depends_on:
+      - db
+  db:
+    container_name: 'db'
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: coderslab
+      MYSQL_DATABASE: task1
+      MYSQL_USER: root
+    ports:
+    - "3306:3306"
+    restart: always
