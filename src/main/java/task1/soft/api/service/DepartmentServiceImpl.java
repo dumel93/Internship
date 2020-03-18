@@ -104,7 +104,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         BigDecimal median;
         double pos1 = Math.floor((salariesList.size() - 1.0) / 2.0);
         double pos2 = Math.ceil((salariesList.size() - 1.0) / 2.0);
-        if (salariesList.size() == 0) {
+        if (salariesList.isEmpty()) {
             return BigDecimal.valueOf(0);
         }
         if (pos1 == pos2) {
