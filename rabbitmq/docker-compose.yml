@@ -1,0 +1,45 @@
+version: '3'
+services:
+  rabbitmq-container:
+    image: rabbitmq:3-management
+    hostname: rabbitmq-container
+    ports:
+      - 5673:5673
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - resolute
+
+  consumer:
+    build: './consumer'
+    ports:
+      - "9090:9090"
+    environment:
+      - spring_rabbitmq_host=rabbitmq-container
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=guest
+      - spring_rabbitmq_password=guest
+    depends_on:
+      - producer
+    networks:
+      - resolute
+
+  producer:
+    build: './producer'
+    ports:
+      - "8080:8080"
+    environment:
+      - spring_rabbitmq_host=rabbitmq-container
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=guest
+      - spring_rabbitmq_password=guest
+    depends_on:
+      - rabbitmq-container
+    networks:
+      - resolute
+
+
+networks:
+  resolute:
+    external:
+      name: resolute
