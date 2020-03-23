@@ -8,11 +8,11 @@ Acceptance criteria:
 - Head of department can create/disable employee accounts in his/her department
 - Head of department can change his/her employee's password
 - Head of department can set salary of his/her employees. Employee salary has to be between values set by CEO.
-- REST API allows to search / list all employees (among all departments or within one department)
+- REST API allows to list all employees (among all departments or within one department)
 -- CEO and heads of departments can search within any department
 -- An employee can search within his/her department
 - A profile of an employee contains: first name, last name, several phone numbers (private, business), email address, department, salary, date of employment, whether his account is active or not, last login timestamp
-- REST API allows to search / list all departments
+- REST API allows to list all departments
 -- CEO and head of departments can view all departments
 -- Employee can view only his department
 - A profile of a department contains: Name, city, head of department profile, number of employees, max & min salary, average salary, median of salary
@@ -24,7 +24,7 @@ Acceptance criteria:
 Application must consist of 3 services (authentication, email & business)
 Authentication service contains employee accounts.
 Business service contains information about departments & it's employees.
-Email service is responsible for sending emails (use FakeSMTP for testing) - https://github.com/Nilhcem/FakeSMTP
+Email service is responsible for sending emails.
 
 Authentication & business service are exposing REST API.
 Business communicates with email service via RabbitMQ
